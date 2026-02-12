@@ -2,276 +2,513 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Keiran</title>
-<meta name="description" content="Keiran">
+<meta name="description" content="Keiran — builder of Mirage, GG, and Sophie.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://images.unsplash.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body {
-    width: 100%; height: 100%;
-    overflow: hidden;
-    background: #000;
-    cursor: crosshair;
-    -webkit-user-select: none;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-  #name {
-    position: fixed;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: clamp(3rem, 10vw, 8rem);
-    color: #fff;
-    z-index: 9999;
-    pointer-events: none;
-    letter-spacing: -0.03em;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-  }
-  #canvas {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 1;
-  }
-  .tiger {
-    position: absolute;
-    opacity: 0;
-    transition: opacity 0.5s ease-out;
-    object-fit: cover;
-    pointer-events: none;
-    will-change: opacity;
-  }
-  .tiger.visible { opacity: 1; }
-  #audio-toggle {
-    position: fixed;
-    bottom: 24px; right: 24px;
-    z-index: 99999;
-    width: 44px; height: 44px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 50%;
-    color: #fff;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s, opacity 0.2s;
-    opacity: 0.5;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-  #audio-toggle:hover { opacity: 1; background: rgba(255,255,255,0.15); }
-  #yt-wrap {
-    position: fixed;
-    width: 1px; height: 1px;
-    overflow: hidden;
-    opacity: 0;
-    pointer-events: none;
-    z-index: -1;
-  }
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Space Grotesk',sans-serif;color:#fff;-webkit-font-smoothing:antialiased}
+canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+#ui{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none}
+#title{position:absolute;top:40px;left:50%;transform:translateX(-50%);font-size:clamp(28px,5vw,48px);font-weight:700;letter-spacing:6px;opacity:0.25;transition:opacity 0.8s ease;pointer-events:auto;user-select:none;text-transform:uppercase}
+#title:hover{opacity:0.7}
+#sound-toggle{position:absolute;bottom:30px;right:30px;pointer-events:auto;cursor:pointer;width:44px;height:44px;border:1px solid rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);backdrop-filter:blur(8px);transition:border-color 0.3s,opacity 0.3s;opacity:0.5;z-index:10}
+#sound-toggle:hover{opacity:1;border-color:rgba(255,255,255,0.4)}
+#sound-toggle svg{width:20px;height:20px;fill:#fff}
+#yt-container{position:absolute;top:-9999px;left:-9999px;width:1px;height:1px;overflow:hidden}
+/* Detail overlay */
+#overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:5;pointer-events:none;opacity:0;transition:opacity 0.5s ease}
+#overlay.active{pointer-events:auto;opacity:1}
+#overlay-bg{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);cursor:pointer}
+#detail{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:560px;width:90%;text-align:center;opacity:0;transform:translate(-50%,-50%) scale(0.9);transition:opacity 0.5s ease 0.1s,transform 0.5s ease 0.1s}
+#overlay.active #detail{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#detail h2{font-size:clamp(22px,4vw,36px);font-weight:700;margin-bottom:8px;letter-spacing:2px}
+#detail .year{font-size:14px;opacity:0.4;margin-bottom:16px;letter-spacing:1px}
+#detail .desc{font-size:clamp(14px,2.5vw,17px);line-height:1.6;opacity:0.7;margin-bottom:12px;font-weight:400}
+#detail .raised{font-size:14px;opacity:0.35;margin-bottom:24px}
+#detail .links{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+#detail .links a{color:#fff;text-decoration:none;font-size:13px;letter-spacing:1px;padding:8px 20px;border:1px solid rgba(255,255,255,0.2);border-radius:24px;transition:all 0.3s;font-weight:400}
+#detail .links a:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.5)}
+#close-btn{position:absolute;top:-50px;right:-10px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid rgba(255,255,255,0.15);transition:border-color 0.3s}
+#close-btn:hover{border-color:rgba(255,255,255,0.5)}
+#close-btn::before,#close-btn::after{content:'';position:absolute;width:14px;height:1px;background:#fff;opacity:0.6}
+#close-btn::before{transform:rotate(45deg)}
+#close-btn::after{transform:rotate(-45deg)}
+/* Creature labels */
+.creature-label{position:absolute;pointer-events:none;font-size:13px;letter-spacing:3px;text-transform:uppercase;opacity:0;transition:opacity 0.4s ease;white-space:nowrap;font-weight:700}
+@media(max-width:600px){
+  #title{top:24px;letter-spacing:4px}
+  #sound-toggle{bottom:20px;right:20px}
+}
 </style>
 </head>
 <body>
-<div id="canvas"></div>
-<div id="name">Keiran</div>
-<button id="audio-toggle" aria-label="Toggle music">🔇</button>
-<div id="yt-wrap"><div id="yt-player"></div></div>
+<canvas id="bg"></canvas>
+<div id="ui">
+  <div id="title">Keiran</div>
+  <div id="sound-toggle" aria-label="Toggle sound">
+    <svg id="sound-icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+  </div>
+  <div id="yt-container"></div>
+</div>
+<div id="overlay">
+  <div id="overlay-bg"></div>
+  <div id="detail">
+    <div id="close-btn"></div>
+    <h2 id="d-title"></h2>
+    <div class="year" id="d-year"></div>
+    <div class="desc" id="d-desc"></div>
+    <div class="raised" id="d-raised"></div>
+    <div class="links" id="d-links"></div>
+  </div>
+</div>
+
 <script>
-(function() {
-  // --- YouTube IFrame API ---
-  var tag = document.createElement('script');
+// ===== PROJECT DATA =====
+const projects = [
+  {
+    name: 'Mirage',
+    year: '2022 – 2024',
+    desc: 'AR meets crypto. A persistent multiplayer AR experience — create, explore, and collect location-based digital art with token incentives.',
+    raised: 'Raised $1.3M from Delphi Digital',
+    links: [
+      { label: 'Website', url: 'https://mirage.ar/' },
+      { label: 'App Store', url: 'https://apps.apple.com/us/app/mirage-studio/id1671886519' }
+    ],
+    color: [0, 180, 255],      // cyan-blue bioluminescence
+    glowColor: 'rgba(0,180,255,',
+    size: 1.0
+  },
+  {
+    name: 'GG',
+    year: '2024',
+    desc: 'PokemonGo meets memecoins. A crypto hunger games that pulled 110K followers in 3 days. Real-time game streaming meets onchain chaos.',
+    raised: 'Raised $700K',
+    links: [
+      { label: 'Watch Video', url: 'https://x.com/NashGGs/status/1808877799790248246' }
+    ],
+    color: [0, 255, 140],      // green bioluminescence
+    glowColor: 'rgba(0,255,140,',
+    size: 0.85
+  },
+  {
+    name: 'Sophie',
+    year: '2024 – 2025',
+    desc: 'The first AI companion on Meta Quest. Unreal MetaHuman with ElevenLabs voice. Shipped through Meta\'s platform review. Generated revenue.',
+    raised: 'Revenue-generating',
+    links: [
+      { label: 'Meta Quest', url: 'https://www.meta.com/experiences/sophie/8890839327601249/' }
+    ],
+    color: [200, 100, 255],    // purple bioluminescence
+    glowColor: 'rgba(200,100,255,',
+    size: 0.9
+  }
+];
+
+// ===== CANVAS SETUP =====
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+let W, H, dpr;
+let mouseX = -9999, mouseY = -9999;
+let touching = false;
+
+function resize() {
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth;
+  H = window.innerHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  // Reposition creatures
+  positionCreatures();
+}
+window.addEventListener('resize', resize);
+
+// ===== PARTICLES =====
+const particles = [];
+const PARTICLE_COUNT = 180;
+
+function initParticles() {
+  particles.length = 0;
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.15,
+      vy: (Math.random() - 0.5) * 0.15 - 0.05,
+      r: Math.random() * 1.8 + 0.3,
+      alpha: Math.random() * 0.4 + 0.05,
+      pulse: Math.random() * Math.PI * 2,
+      pulseSpeed: Math.random() * 0.008 + 0.003,
+      hue: Math.random() * 60 + 170 // 170-230 range (blue-cyan)
+    });
+  }
+}
+
+function updateParticles() {
+  for (const p of particles) {
+    p.pulse += p.pulseSpeed;
+    const pa = p.alpha + Math.sin(p.pulse) * 0.15;
+
+    // Mouse interaction
+    const dx = p.x - mouseX;
+    const dy = p.y - mouseY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 150) {
+      const force = (150 - dist) / 150 * 0.3;
+      p.vx += (dx / dist) * force;
+      p.vy += (dy / dist) * force;
+    }
+
+    p.vx *= 0.98;
+    p.vy *= 0.98;
+    p.x += p.vx;
+    p.y += p.vy;
+
+    // Wrap
+    if (p.x < -10) p.x = W + 10;
+    if (p.x > W + 10) p.x = -10;
+    if (p.y < -10) p.y = H + 10;
+    if (p.y > H + 10) p.y = -10;
+
+    // Draw
+    const a = Math.max(0, Math.min(1, pa));
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `hsla(${p.hue},80%,70%,${a})`;
+    ctx.fill();
+
+    // Glow
+    if (p.r > 1) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${p.hue},80%,60%,${a * 0.15})`;
+      ctx.fill();
+    }
+  }
+}
+
+// ===== CREATURES =====
+const creatures = [];
+let hoveredCreature = null;
+let activeCreature = null;
+
+function positionCreatures() {
+  const isMobile = W < 600;
+  const positions = isMobile
+    ? [
+        { x: W * 0.5, y: H * 0.28 },
+        { x: W * 0.3, y: H * 0.52 },
+        { x: W * 0.7, y: H * 0.73 }
+      ]
+    : [
+        { x: W * 0.22, y: H * 0.45 },
+        { x: W * 0.52, y: H * 0.55 },
+        { x: W * 0.78, y: H * 0.4 }
+      ];
+
+  for (let i = 0; i < projects.length; i++) {
+    if (!creatures[i]) {
+      creatures[i] = {
+        baseX: positions[i].x,
+        baseY: positions[i].y,
+        x: positions[i].x,
+        y: positions[i].y,
+        phase: Math.random() * Math.PI * 2,
+        tentaclePhase: Math.random() * Math.PI * 2,
+        hoverAmt: 0,
+        project: projects[i]
+      };
+    } else {
+      creatures[i].baseX = positions[i].x;
+      creatures[i].baseY = positions[i].y;
+    }
+  }
+}
+
+function drawCreature(c, time) {
+  const p = c.project;
+  const baseSize = (W < 600 ? 40 : 60) * p.size;
+  const hover = c.hoverAmt;
+  const size = baseSize * (1 + hover * 0.2);
+  const [r, g, b] = p.color;
+
+  // Drift
+  c.phase += 0.004;
+  c.tentaclePhase += 0.015;
+  c.x = c.baseX + Math.sin(c.phase) * 15 + Math.cos(c.phase * 0.7) * 8;
+  c.y = c.baseY + Math.cos(c.phase * 0.8) * 12 + Math.sin(c.phase * 0.5) * 6;
+
+  const pulse = 0.7 + Math.sin(time * 0.0015 + c.phase) * 0.3;
+  const glowAlpha = (0.12 + hover * 0.15) * pulse;
+  const bodyAlpha = (0.35 + hover * 0.35) * pulse;
+
+  ctx.save();
+  ctx.translate(c.x, c.y);
+
+  // Outer glow
+  const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 3);
+  grad.addColorStop(0, `rgba(${r},${g},${b},${glowAlpha})`);
+  grad.addColorStop(0.4, `rgba(${r},${g},${b},${glowAlpha * 0.3})`);
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.beginPath();
+  ctx.arc(0, 0, size * 3, 0, Math.PI * 2);
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Bell (jellyfish dome) — organic shape using bezier curves
+  ctx.beginPath();
+  const bellH = size * 0.7;
+  const bellW = size * 0.9;
+  const wobble1 = Math.sin(c.tentaclePhase) * size * 0.04;
+  const wobble2 = Math.cos(c.tentaclePhase * 1.3) * size * 0.03;
+
+  ctx.moveTo(-bellW, size * 0.1);
+  ctx.bezierCurveTo(-bellW + wobble1, -bellH * 0.5, -bellW * 0.3, -bellH - wobble2, 0, -bellH);
+  ctx.bezierCurveTo(bellW * 0.3, -bellH + wobble2, bellW - wobble1, -bellH * 0.5, bellW, size * 0.1);
+  ctx.bezierCurveTo(bellW * 0.6, size * 0.2, -bellW * 0.6, size * 0.2, -bellW, size * 0.1);
+
+  const bellGrad = ctx.createRadialGradient(0, -bellH * 0.3, 0, 0, -bellH * 0.3, size);
+  bellGrad.addColorStop(0, `rgba(${r},${g},${b},${bodyAlpha * 0.8})`);
+  bellGrad.addColorStop(0.5, `rgba(${r},${g},${b},${bodyAlpha * 0.3})`);
+  bellGrad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+  ctx.fillStyle = bellGrad;
+  ctx.fill();
+
+  // Inner luminous core
+  const coreGrad = ctx.createRadialGradient(0, -bellH * 0.3, 0, 0, -bellH * 0.3, size * 0.35);
+  coreGrad.addColorStop(0, `rgba(255,255,255,${bodyAlpha * 0.6})`);
+  coreGrad.addColorStop(0.5, `rgba(${r},${g},${b},${bodyAlpha * 0.4})`);
+  coreGrad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.beginPath();
+  ctx.arc(0, -bellH * 0.3, size * 0.35, 0, Math.PI * 2);
+  ctx.fillStyle = coreGrad;
+  ctx.fill();
+
+  // Tentacles
+  const tentCount = 7;
+  for (let t = 0; t < tentCount; t++) {
+    const tx = -bellW * 0.7 + (bellW * 1.4 / (tentCount - 1)) * t;
+    const tentLen = size * (0.8 + Math.sin(c.tentaclePhase + t * 0.8) * 0.3);
+    const sway = Math.sin(c.tentaclePhase * 0.7 + t * 1.2) * size * 0.25;
+    const sway2 = Math.cos(c.tentaclePhase * 0.5 + t * 0.9) * size * 0.15;
+
+    ctx.beginPath();
+    ctx.moveTo(tx, size * 0.1);
+    ctx.bezierCurveTo(
+      tx + sway * 0.3, size * 0.1 + tentLen * 0.3,
+      tx + sway, size * 0.1 + tentLen * 0.6,
+      tx + sway + sway2, size * 0.1 + tentLen
+    );
+    ctx.strokeStyle = `rgba(${r},${g},${b},${bodyAlpha * (0.2 + Math.sin(c.tentaclePhase + t) * 0.1)})`;
+    ctx.lineWidth = 1.5 - t * 0.05;
+    ctx.stroke();
+
+    // Glowing dots along tentacles
+    if (t % 2 === 0) {
+      const dotY = size * 0.1 + tentLen * (0.4 + Math.sin(c.tentaclePhase * 0.3 + t) * 0.15);
+      const dotX = tx + sway * 0.4;
+      ctx.beginPath();
+      ctx.arc(dotX, dotY, 1.5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${r},${g},${b},${bodyAlpha * 0.6})`;
+      ctx.fill();
+    }
+  }
+
+  // Trailing filaments (longer, thinner)
+  for (let f = 0; f < 3; f++) {
+    const fx = -bellW * 0.3 + bellW * 0.3 * f;
+    const fLen = size * (1.5 + Math.sin(c.tentaclePhase * 0.4 + f * 2) * 0.4);
+    const fSway = Math.sin(c.tentaclePhase * 0.3 + f * 1.5) * size * 0.4;
+
+    ctx.beginPath();
+    ctx.moveTo(fx, size * 0.15);
+    ctx.bezierCurveTo(
+      fx + fSway * 0.2, size * 0.15 + fLen * 0.25,
+      fx + fSway * 0.7, size * 0.15 + fLen * 0.5,
+      fx + fSway, size * 0.15 + fLen
+    );
+    ctx.strokeStyle = `rgba(${r},${g},${b},${bodyAlpha * 0.08})`;
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+  }
+
+  ctx.restore();
+
+  // Label
+  if (hover > 0.1) {
+    ctx.save();
+    ctx.globalAlpha = hover;
+    ctx.font = '700 13px "Space Grotesk"';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = `rgba(${r},${g},${b},${hover})`;
+    ctx.letterSpacing = '3px';
+    ctx.fillText(p.name.toUpperCase(), c.x, c.y - size * 1.4);
+    ctx.restore();
+  }
+}
+
+function hitTestCreature(mx, my) {
+  for (let i = creatures.length - 1; i >= 0; i--) {
+    const c = creatures[i];
+    const size = (W < 600 ? 40 : 60) * c.project.size;
+    const dx = mx - c.x;
+    const dy = my - c.y;
+    if (dx * dx + dy * dy < (size * 1.5) * (size * 1.5)) return c;
+  }
+  return null;
+}
+
+// ===== DETAIL OVERLAY =====
+const overlay = document.getElementById('overlay');
+const overlayBg = document.getElementById('overlay-bg');
+
+function showDetail(c) {
+  activeCreature = c;
+  const p = c.project;
+  document.getElementById('d-title').textContent = p.name;
+  document.getElementById('d-year').textContent = p.year;
+  document.getElementById('d-desc').textContent = p.desc;
+  document.getElementById('d-raised').textContent = p.raised;
+
+  const linksEl = document.getElementById('d-links');
+  linksEl.innerHTML = '';
+  for (const l of p.links) {
+    const a = document.createElement('a');
+    a.href = l.url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.textContent = l.label;
+    linksEl.appendChild(a);
+  }
+
+  // Color the title
+  const [r, g, b] = p.color;
+  document.getElementById('d-title').style.color = `rgb(${r},${g},${b})`;
+
+  overlay.classList.add('active');
+}
+
+function hideDetail() {
+  overlay.classList.remove('active');
+  activeCreature = null;
+}
+
+overlayBg.addEventListener('click', hideDetail);
+document.getElementById('close-btn').addEventListener('click', hideDetail);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') hideDetail(); });
+
+// ===== INPUT =====
+canvas.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+canvas.addEventListener('mouseleave', () => { mouseX = -9999; mouseY = -9999; });
+canvas.addEventListener('click', e => {
+  const c = hitTestCreature(e.clientX, e.clientY);
+  if (c) showDetail(c);
+});
+
+canvas.addEventListener('touchstart', e => {
+  const t = e.touches[0];
+  mouseX = t.clientX;
+  mouseY = t.clientY;
+  touching = true;
+}, { passive: true });
+canvas.addEventListener('touchmove', e => {
+  const t = e.touches[0];
+  mouseX = t.clientX;
+  mouseY = t.clientY;
+}, { passive: true });
+canvas.addEventListener('touchend', e => {
+  if (touching) {
+    const c = hitTestCreature(mouseX, mouseY);
+    if (c) showDetail(c);
+  }
+  setTimeout(() => { mouseX = -9999; mouseY = -9999; touching = false; }, 100);
+}, { passive: true });
+
+// ===== SOUND =====
+let ytPlayer = null;
+let soundOn = false;
+const soundToggle = document.getElementById('sound-toggle');
+const soundIcon = document.getElementById('sound-icon');
+const muteIcon = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
+const playIcon = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
+
+function loadYTAPI() {
+  if (window.YT) return;
+  const tag = document.createElement('script');
   tag.src = 'https://www.youtube.com/iframe_api';
   document.head.appendChild(tag);
+}
 
-  var player = null;
-  var muted = true;
-  var btn = document.getElementById('audio-toggle');
-  var playerReady = false;
-
-  window.onYouTubeIframeAPIReady = function() {
-    player = new YT.Player('yt-player', {
-      width: '1',
-      height: '1',
-      videoId: 'HhZaHf8RP6g',
-      playerVars: {
-        autoplay: 1,
-        loop: 1,
-        playlist: 'HhZaHf8RP6g',
-        controls: 0,
-        showinfo: 0,
-        modestbranding: 1,
-        rel: 0,
-        mute: 1
+window.onYouTubeIframeAPIReady = function() {
+  ytPlayer = new YT.Player('yt-container', {
+    height: '1', width: '1',
+    videoId: 'HhZaHf8RP6g',
+    playerVars: { autoplay: 0, loop: 1, playlist: 'HhZaHf8RP6g', controls: 0 },
+    events: {
+      onReady: function(e) {
+        if (soundOn) { e.target.playVideo(); }
       },
-      events: {
-        onReady: function(e) {
-          playerReady = true;
-          e.target.setVolume(40);
+      onStateChange: function(e) {
+        // Loop
+        if (e.data === YT.PlayerState.ENDED) {
           e.target.playVideo();
-        },
-        onStateChange: function(e) {
-          // If ended somehow, replay
-          if (e.data === YT.PlayerState.ENDED) {
-            player.seekTo(0);
-            player.playVideo();
-          }
         }
       }
-    });
-  };
-
-  // Unmute on first interaction
-  var started = false;
-  function unmuteOnGesture() {
-    if (started || !playerReady) return;
-    started = true;
-    player.unMute();
-    player.setVolume(40);
-    player.playVideo();
-    muted = false;
-    btn.textContent = '🔊';
-  }
-
-  document.addEventListener('mousemove', unmuteOnGesture, { once: true });
-  document.addEventListener('touchstart', unmuteOnGesture, { once: true });
-
-  btn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    if (!playerReady) return;
-    if (muted) {
-      player.unMute();
-      player.setVolume(40);
-      player.playVideo();
-      muted = false;
-      btn.textContent = '🔊';
-      started = true;
-    } else {
-      player.mute();
-      muted = true;
-      btn.textContent = '🔇';
     }
   });
+};
 
-  // --- Tiger Trail ---
-  var IDS = [
-    'photo-1454023492550-5696f8ff10e1','photo-1477764250597-dffe9f601ae8','photo-1500463959177-e0869687df26',
-    'photo-1503066211613-c17ebc9daef0','photo-1507318584470-a67407ebe29a','photo-1508817628294-5a453fa0b8fb',
-    'photo-1524132989408-c8ee48d8f147','photo-1526034332220-067b0f400e06','photo-1537616930345-1d330ad3e0a9',
-    'photo-1541949631662-a75f7691e62e','photo-1544830219-00a0e3d3b2f7','photo-1545462616-efed1939219f',
-    'photo-1548184062-8ec2ca93a26c','photo-1548962236-6352f0b72862','photo-1549480017-d76466a4b7e8',
-    'photo-1550973595-c9f4d21f38cc','photo-1551972251-12070d63502a','photo-1553054366-ebbf4296eb32',
-    'photo-1561731216-c3a4d99437d5','photo-1562552476-8ac59b2a2e46','photo-1566794774033-2de8ecd7b17c',
-    'photo-1578181150462-e5a216533483','photo-1584313451920-b58733a2ecca','photo-1586617356423-52763004deac',
-    'photo-1587219408895-24918d2b78af','photo-1589460017165-bbdd02214cfb','photo-1591824438708-ce405f36ba3d',
-    'photo-1598214325784-4b28e27e64e9','photo-1602491453318-dcdf64966d7d','photo-1602491453439-8f207298a202',
-    'photo-1602491453631-e2a5ad90a131','photo-1602909554201-06486b9b5c72','photo-1605092676920-8ac5ae40c7c8',
-    'photo-1608993659340-d99016d296df','photo-1612531760869-929bf737386b','photo-1612975631838-719497229ee4',
-    'photo-1612975702762-7cc2733b3e75','photo-1613132272170-15e05bd40713','photo-1615474286632-e31ac3633d58',
-    'photo-1615824996195-f780bba7cfab','photo-1615963244664-5b845b2025ee','photo-1616869736810-a674a04d0440',
-    'photo-1616869736815-3362745ab32d','photo-1617977505056-f5ea2633eda5','photo-1619475762212-da12e5e15f18',
-    'photo-1623494342806-791ae5450a54','photo-1623494344194-e6e9462ef944','photo-1623935900939-75e2d1d2995a',
-    'photo-1623995523843-f282cd8aa1d7','photo-1626344235424-c599aa1c9b61','photo-1630768555357-143ea9ebcb13',
-    'photo-1638249243194-7db6a28a9de9','photo-1640957507202-6e5ad7cd3365','photo-1644942888667-8ec2c05d7f01',
-    'photo-1645517379284-10008b2ada22','photo-1645517387524-ed915045c2bf','photo-1649253902869-6659891d11fd',
-    'photo-1651464524587-e35be1f9b4cc','photo-1654712151700-fd9f92eb7c53','photo-1655750055962-785513a1ff1d',
-    'photo-1657213441073-c164a5ef6713','photo-1659879622193-f61183e74a0c','photo-1661206109036-c10ce31fc86c',
-    'photo-1661206109053-94b22a75968c','photo-1661206110069-019805425576','photo-1661222039249-02101c490c67',
-    'photo-1661222039766-370ca0a16d1b','photo-1661222040164-7d73504f7ff1','photo-1661222483611-cd1575459449',
-    'photo-1661769212734-67877c79deff','photo-1661857868021-d219199763b4','photo-1661906084290-57b10072e66d',
-    'photo-1662071589780-36a5ee4c4beb','photo-1667757698092-cc387285e7d6','photo-1670421291781-4d54641ded9e',
-    'photo-1671122548270-9dc65f2bbed2','photo-1671132313213-474849d6065a','photo-1672053443159-570c46bc118b',
-    'photo-1672657803412-55d2a7f11c45','photo-1673632337424-fa3c84437078','photo-1676744843382-11120c77b34e',
-    'photo-1677936181615-9ec066472b99','photo-1677936181651-6e356c749fb0','photo-1677936181664-c34b63c3e3e0',
-    'photo-1677936181683-24cf515b97ae','photo-1677936181719-921944157f58','photo-1677936181737-02e8165e7392',
-    'photo-1686648420191-3a4d35073fd6','photo-1687456767760-ced0514ffefa','photo-1689176796800-ab67fbf93329',
-    'photo-1693628773083-461156109476','photo-1694615040908-97388c97b338','photo-1696636397656-c70b3a881768',
-    'photo-1698382439843-ca033a6079c0','photo-1698586582840-a00a2fd7eec4','photo-1698586730784-7ce46963efb9',
-    'photo-1700197742784-d11e41543b99','photo-1704852144181-fd3c421daad7','photo-1704852154492-baad4710252e',
-    'photo-1710639046511-38523d4b0b1f','photo-1710639046619-b69fa8b71536','photo-1720108430550-017dcd3e3dcc',
-    'photo-1724441716992-b36c420bb834','photo-1730014392438-317437a03007','photo-1730014392621-10de7b9bc20f',
-    'photo-1732665128161-266666d93709','photo-1736411801310-489cbefb5b0e','photo-1736950638383-723d12c63cd9',
-    'photo-1744372014211-025ba28e40f6','photo-1747680008347-1044a19b5bce','photo-1768403917174-d8470d9e4730',
-    'photo-1769538012116-b26a4cecbcf7','photo-1770756248904-6031ad07223f'
-  ];
+soundToggle.addEventListener('click', () => {
+  soundOn = !soundOn;
+  soundIcon.innerHTML = soundOn ? playIcon : muteIcon;
+  if (!window.YT) { loadYTAPI(); return; }
+  if (!ytPlayer) return;
+  if (soundOn) { ytPlayer.playVideo(); }
+  else { ytPlayer.pauseVideo(); }
+});
 
-  for (var i = IDS.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var t = IDS[i]; IDS[i] = IDS[j]; IDS[j] = t;
+// Start with mute icon state (show play icon = sound off initially... let's use mute icon)
+soundIcon.innerHTML = muteIcon;
+
+// ===== RENDER LOOP =====
+let lastTime = 0;
+
+function render(time) {
+  ctx.clearRect(0, 0, W, H);
+
+  // Subtle depth gradient
+  const bgGrad = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * 0.7);
+  bgGrad.addColorStop(0, 'rgba(5,8,18,1)');
+  bgGrad.addColorStop(1, 'rgba(0,0,0,1)');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Particles
+  updateParticles();
+
+  // Creatures
+  const hit = hitTestCreature(mouseX, mouseY);
+  for (const c of creatures) {
+    const isHovered = c === hit && !activeCreature;
+    c.hoverAmt += (isHovered ? 0.04 : -0.04);
+    c.hoverAmt = Math.max(0, Math.min(1, c.hoverAmt));
+    drawCreature(c, time);
   }
 
-  var canvas = document.getElementById('canvas');
-  var idx = 0, lastX = -999, lastY = -999;
-  var MIN_DIST = 55, PRELOAD_AHEAD = 10;
-  var preloaded = [];
+  // Cursor
+  canvas.style.cursor = hit && !activeCreature ? 'pointer' : 'default';
 
-  function url(id) {
-    return 'https://images.unsplash.com/' + id + '?w=300&h=300&fit=crop&q=75&auto=format';
-  }
+  requestAnimationFrame(render);
+}
 
-  function preload() {
-    while (preloaded.length < PRELOAD_AHEAD) {
-      var img = new Image();
-      img.src = url(IDS[idx % IDS.length]);
-      preloaded.push(img);
-      idx++;
-    }
-  }
-  preload();
-
-  function spawn(x, y) {
-    var dx = x - lastX, dy = y - lastY;
-    if (dx * dx + dy * dy < MIN_DIST * MIN_DIST) return;
-    lastX = x; lastY = y;
-
-    if (preloaded.length === 0) { preload(); return; }
-    var pre = preloaded.shift();
-    preload();
-
-    var size = 70 + Math.random() * 130;
-    var rot = (Math.random() - 0.5) * 35;
-
-    var el = document.createElement('img');
-    el.src = pre.src;
-    el.className = 'tiger';
-    el.width = size;
-    el.height = size;
-    el.style.cssText = 'left:' + (x - size / 2) + 'px;top:' + (y - size / 2) + 'px;transform:rotate(' + rot + 'deg);border-radius:' + (Math.random() > 0.5 ? '2px' : '50%');
-    canvas.appendChild(el);
-    requestAnimationFrame(function() { el.classList.add('visible'); });
-
-    if (canvas.childElementCount > 250) {
-      canvas.removeChild(canvas.firstElementChild);
-    }
-  }
-
-  var ticking = false;
-  function onMove(x, y) {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(function() {
-      spawn(x, y);
-      ticking = false;
-    });
-  }
-
-  document.addEventListener('mousemove', function(e) { onMove(e.clientX, e.clientY); });
-  document.addEventListener('touchmove', function(e) {
-    e.preventDefault();
-    onMove(e.touches[0].clientX, e.touches[0].clientY);
-  }, { passive: false });
-  document.addEventListener('touchstart', function(e) {
-    lastX = -999; lastY = -999;
-    onMove(e.touches[0].clientX, e.touches[0].clientY);
-  });
-})();
+// ===== INIT =====
+resize();
+initParticles();
+requestAnimationFrame(render);
 </script>
 </body>
 </html>
