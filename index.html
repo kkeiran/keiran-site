@@ -69,47 +69,94 @@
     -webkit-backdrop-filter: blur(8px);
   }
   #audio-toggle:hover { opacity: 1; background: rgba(255,255,255,0.15); }
+  #yt-wrap {
+    position: fixed;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+  }
 </style>
 </head>
 <body>
 <div id="canvas"></div>
 <div id="name">Keiran</div>
 <button id="audio-toggle" aria-label="Toggle music">🔇</button>
-<audio id="bgm" src="ambient.mp3" loop preload="auto"></audio>
+<div id="yt-wrap"><div id="yt-player"></div></div>
 <script>
 (function() {
-  // --- Audio ---
-  var bgm = document.getElementById('bgm');
+  // --- YouTube IFrame API ---
+  var tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+
+  var player = null;
+  var muted = true;
   var btn = document.getElementById('audio-toggle');
-  var playing = false;
-  bgm.volume = 0.35;
+  var playerReady = false;
 
-  function tryPlay() {
-    bgm.play().then(function() {
-      playing = true;
-      btn.textContent = '🔊';
-    }).catch(function() {});
-  }
+  window.onYouTubeIframeAPIReady = function() {
+    player = new YT.Player('yt-player', {
+      width: '1',
+      height: '1',
+      videoId: 'HhZaHf8RP6g',
+      playerVars: {
+        autoplay: 1,
+        loop: 1,
+        playlist: 'HhZaHf8RP6g',
+        controls: 0,
+        showinfo: 0,
+        modestbranding: 1,
+        rel: 0,
+        mute: 1
+      },
+      events: {
+        onReady: function(e) {
+          playerReady = true;
+          e.target.setVolume(40);
+          e.target.playVideo();
+        },
+        onStateChange: function(e) {
+          // If ended somehow, replay
+          if (e.data === YT.PlayerState.ENDED) {
+            player.seekTo(0);
+            player.playVideo();
+          }
+        }
+      }
+    });
+  };
 
-  // Autoplay on first interaction (browser policy requires gesture)
+  // Unmute on first interaction
   var started = false;
-  function startOnGesture() {
-    if (started) return;
+  function unmuteOnGesture() {
+    if (started || !playerReady) return;
     started = true;
-    tryPlay();
+    player.unMute();
+    player.setVolume(40);
+    player.playVideo();
+    muted = false;
+    btn.textContent = '🔊';
   }
-  document.addEventListener('mousemove', startOnGesture, { once: true });
-  document.addEventListener('touchstart', startOnGesture, { once: true });
-  document.addEventListener('click', startOnGesture, { once: true });
+
+  document.addEventListener('mousemove', unmuteOnGesture, { once: true });
+  document.addEventListener('touchstart', unmuteOnGesture, { once: true });
 
   btn.addEventListener('click', function(e) {
     e.stopPropagation();
-    if (playing) {
-      bgm.pause();
-      playing = false;
-      btn.textContent = '🔇';
+    if (!playerReady) return;
+    if (muted) {
+      player.unMute();
+      player.setVolume(40);
+      player.playVideo();
+      muted = false;
+      btn.textContent = '🔊';
+      started = true;
     } else {
-      tryPlay();
+      player.mute();
+      muted = true;
+      btn.textContent = '🔇';
     }
   });
 
@@ -155,7 +202,6 @@
     'photo-1769538012116-b26a4cecbcf7','photo-1770756248904-6031ad07223f'
   ];
 
-  // Shuffle
   for (var i = IDS.length - 1; i > 0; i--) {
     var j = Math.floor(Math.random() * (i + 1));
     var t = IDS[i]; IDS[i] = IDS[j]; IDS[j] = t;
