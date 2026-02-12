@@ -4,511 +4,476 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Keiran</title>
-<meta name="description" content="Keiran — builder of Mirage, GG, and Sophie.">
+<meta name="description" content="Builder. Mirage, GG, Sophie.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Space Grotesk',sans-serif;color:#fff;-webkit-font-smoothing:antialiased}
-canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
-#ui{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none}
-#title{position:absolute;top:40px;left:50%;transform:translateX(-50%);font-size:clamp(28px,5vw,48px);font-weight:700;letter-spacing:6px;opacity:0.25;transition:opacity 0.8s ease;pointer-events:auto;user-select:none;text-transform:uppercase}
-#title:hover{opacity:0.7}
-#sound-toggle{position:absolute;bottom:30px;right:30px;pointer-events:auto;cursor:pointer;width:44px;height:44px;border:1px solid rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);backdrop-filter:blur(8px);transition:border-color 0.3s,opacity 0.3s;opacity:0.5;z-index:10}
-#sound-toggle:hover{opacity:1;border-color:rgba(255,255,255,0.4)}
-#sound-toggle svg{width:20px;height:20px;fill:#fff}
-#yt-container{position:absolute;top:-9999px;left:-9999px;width:1px;height:1px;overflow:hidden}
-/* Detail overlay */
-#overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:5;pointer-events:none;opacity:0;transition:opacity 0.5s ease}
-#overlay.active{pointer-events:auto;opacity:1}
-#overlay-bg{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);cursor:pointer}
-#detail{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:560px;width:90%;text-align:center;opacity:0;transform:translate(-50%,-50%) scale(0.9);transition:opacity 0.5s ease 0.1s,transform 0.5s ease 0.1s}
-#overlay.active #detail{opacity:1;transform:translate(-50%,-50%) scale(1)}
-#detail h2{font-size:clamp(22px,4vw,36px);font-weight:700;margin-bottom:8px;letter-spacing:2px}
-#detail .year{font-size:14px;opacity:0.4;margin-bottom:16px;letter-spacing:1px}
-#detail .desc{font-size:clamp(14px,2.5vw,17px);line-height:1.6;opacity:0.7;margin-bottom:12px;font-weight:400}
-#detail .raised{font-size:14px;opacity:0.35;margin-bottom:24px}
-#detail .links{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
-#detail .links a{color:#fff;text-decoration:none;font-size:13px;letter-spacing:1px;padding:8px 20px;border:1px solid rgba(255,255,255,0.2);border-radius:24px;transition:all 0.3s;font-weight:400}
-#detail .links a:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.5)}
-#close-btn{position:absolute;top:-50px;right:-10px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid rgba(255,255,255,0.15);transition:border-color 0.3s}
-#close-btn:hover{border-color:rgba(255,255,255,0.5)}
-#close-btn::before,#close-btn::after{content:'';position:absolute;width:14px;height:1px;background:#fff;opacity:0.6}
-#close-btn::before{transform:rotate(45deg)}
-#close-btn::after{transform:rotate(-45deg)}
-/* Creature labels */
-.creature-label{position:absolute;pointer-events:none;font-size:13px;letter-spacing:3px;text-transform:uppercase;opacity:0;transition:opacity 0.4s ease;white-space:nowrap;font-weight:700}
-@media(max-width:600px){
-  #title{top:24px;letter-spacing:4px}
-  #sound-toggle{bottom:20px;right:20px}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --cyan:#00e5ff;--teal:#00bcd4;--blue:#0077ff;--purple:#a855f7;
+  --glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.12);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Space Grotesk',sans-serif;
+  background:#020b18;color:#fff;overflow-x:hidden;
+  min-height:100vh;
+}
+
+/* ══════ OCEAN BACKGROUND ══════ */
+.ocean-bg{
+  position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(0,119,255,0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 20% 80%, rgba(0,229,255,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 80% 70%, rgba(168,85,247,0.06) 0%, transparent 60%);
+}
+.ocean-bg img{
+  width:100%;height:100%;object-fit:cover;
+  opacity:0.45;filter:brightness(0.6) saturate(1.3) contrast(1.1);
+}
+.ocean-overlay{
+  position:fixed;inset:0;z-index:1;
+  background:
+    linear-gradient(180deg, rgba(2,11,24,0.3) 0%, rgba(2,11,24,0.1) 40%, rgba(2,11,24,0.5) 100%),
+    radial-gradient(ellipse 120% 80% at 50% 0%, rgba(0,119,255,0.12) 0%, transparent 60%);
+  pointer-events:none;
+}
+
+/* ══════ LIGHT RAYS ══════ */
+.light-rays{
+  position:fixed;top:-20%;left:50%;transform:translateX(-50%);
+  width:140%;height:70%;z-index:1;pointer-events:none;opacity:0.3;
+}
+.light-rays .ray{
+  position:absolute;top:0;
+  width:2px;height:100%;
+  background:linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(0,229,255,0.1) 40%, transparent 100%);
+  filter:blur(8px);
+  animation:rayFloat 8s ease-in-out infinite;
+}
+.light-rays .ray:nth-child(1){left:15%;width:3px;animation-delay:0s;opacity:0.6}
+.light-rays .ray:nth-child(2){left:30%;width:2px;animation-delay:1.5s;opacity:0.4}
+.light-rays .ray:nth-child(3){left:50%;width:4px;animation-delay:0.8s;opacity:0.5}
+.light-rays .ray:nth-child(4){left:65%;width:2px;animation-delay:2.2s;opacity:0.3}
+.light-rays .ray:nth-child(5){left:80%;width:3px;animation-delay:1s;opacity:0.45}
+@keyframes rayFloat{
+  0%,100%{transform:translateX(0) scaleY(1);opacity:0.3}
+  50%{transform:translateX(10px) scaleY(1.05);opacity:0.5}
+}
+
+/* ══════ PARTICLES ══════ */
+.particles{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.particle{
+  position:absolute;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,0.8) 0%,rgba(0,229,255,0.3) 60%,transparent 100%);
+  animation:particleDrift linear infinite;
+}
+@keyframes particleDrift{
+  0%{transform:translateY(110vh) translateX(0);opacity:0}
+  10%{opacity:1}
+  90%{opacity:1}
+  100%{transform:translateY(-10vh) translateX(var(--drift));opacity:0}
+}
+
+/* ══════ MAIN CONTENT ══════ */
+.content{position:relative;z-index:10;min-height:100vh;padding:0 24px}
+
+/* ══════ HERO ══════ */
+.hero{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;text-align:center;padding-top:60px;
+}
+.hero-title{
+  font-size:clamp(4rem,12vw,9rem);font-weight:700;letter-spacing:0.04em;
+  background:linear-gradient(180deg,#fff 20%,rgba(0,229,255,0.7) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  text-shadow:none;filter:drop-shadow(0 0 40px rgba(0,229,255,0.3));
+  animation:heroGlow 4s ease-in-out infinite alternate;
+}
+@keyframes heroGlow{
+  0%{filter:drop-shadow(0 0 30px rgba(0,229,255,0.2))}
+  100%{filter:drop-shadow(0 0 60px rgba(0,229,255,0.4))}
+}
+.hero-sub{
+  margin-top:16px;font-size:clamp(1rem,2.5vw,1.3rem);font-weight:400;
+  color:rgba(255,255,255,0.5);letter-spacing:0.15em;text-transform:uppercase;
+}
+.scroll-hint{
+  margin-top:60px;opacity:0.4;animation:bob 2s ease-in-out infinite;
+}
+.scroll-hint svg{width:24px;height:24px;stroke:#fff;stroke-width:2;fill:none}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+
+/* ══════ PROJECTS SECTION ══════ */
+.projects{
+  max-width:1200px;margin:0 auto;padding:40px 0 120px;
+}
+.section-label{
+  text-align:center;font-size:0.85rem;letter-spacing:0.25em;text-transform:uppercase;
+  color:rgba(255,255,255,0.3);margin-bottom:60px;
+}
+
+/* ══════ PROJECT CARD ══════ */
+.card{
+  position:relative;
+  background:var(--glass);
+  border:1px solid var(--glass-border);
+  border-radius:24px;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  padding:0;margin-bottom:48px;
+  overflow:hidden;cursor:pointer;
+  transition:transform 0.5s cubic-bezier(0.23,1,0.32,1),
+             box-shadow 0.5s cubic-bezier(0.23,1,0.32,1),
+             border-color 0.3s;
+  animation:cardFloat var(--float-dur,6s) ease-in-out infinite;
+  animation-delay:var(--float-delay,0s);
+}
+@keyframes cardFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-8px)}
+}
+.card:hover{
+  transform:translateY(-12px) scale(1.01) !important;
+  border-color:rgba(0,229,255,0.3);
+  box-shadow:
+    0 8px 32px rgba(0,229,255,0.15),
+    0 0 80px rgba(0,229,255,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.card-inner{display:flex;gap:0;align-items:stretch;min-height:320px}
+.card-media{
+  flex:0 0 45%;position:relative;overflow:hidden;
+  background:#0a1628;
+}
+.card-media img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform 0.6s cubic-bezier(0.23,1,0.32,1),filter 0.6s;
+  filter:brightness(0.85) saturate(1.1);
+}
+.card:hover .card-media img{
+  transform:scale(1.05);filter:brightness(1) saturate(1.2);
+}
+.card-body{
+  flex:1;padding:40px;display:flex;flex-direction:column;justify-content:center;
+}
+.card-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--accent,var(--cyan));margin-bottom:12px;font-weight:500;
+}
+.card-tag .dot{width:6px;height:6px;border-radius:50%;background:currentColor;
+  box-shadow:0 0 8px currentColor;
+}
+.card-name{
+  font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;margin-bottom:8px;
+  line-height:1.2;
+}
+.card-tagline{
+  font-size:1.05rem;color:rgba(255,255,255,0.7);margin-bottom:16px;line-height:1.5;
+}
+.card-stat{
+  font-size:1.8rem;font-weight:700;margin-bottom:4px;
+  background:linear-gradient(135deg,var(--accent,var(--cyan)),#fff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.card-stat-label{font-size:0.8rem;color:rgba(255,255,255,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:20px}
+.card-desc{font-size:0.95rem;color:rgba(255,255,255,0.55);line-height:1.6;margin-bottom:24px}
+.card-links{display:flex;gap:12px;flex-wrap:wrap}
+.card-links a{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 18px;border-radius:100px;font-size:0.85rem;font-weight:500;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);
+  color:#fff;text-decoration:none;transition:all 0.3s;
+}
+.card-links a:hover{
+  background:rgba(0,229,255,0.12);border-color:rgba(0,229,255,0.3);
+  box-shadow:0 0 20px rgba(0,229,255,0.1);
+}
+.card-links a svg{width:14px;height:14px}
+
+/* Expanded state */
+.card-expand{
+  max-height:0;overflow:hidden;transition:max-height 0.6s cubic-bezier(0.23,1,0.32,1);
+}
+.card.expanded .card-expand{max-height:500px}
+.card-expand-inner{padding:0 40px 32px;border-top:1px solid rgba(255,255,255,0.06);margin-top:0;padding-top:24px}
+.video-embed{
+  width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;
+  background:#0a1628;
+}
+.video-embed iframe{width:100%;height:100%;border:none}
+
+/* Card color accents */
+.card[data-project="mirage"]{--accent:#00e5ff;--float-dur:6s;--float-delay:0s}
+.card[data-project="gg"]{--accent:#a855f7;--float-dur:7s;--float-delay:0.5s}
+.card[data-project="sophie"]{--accent:#3b82f6;--float-dur:6.5s;--float-delay:1s}
+.card[data-project="mirage"]:hover{box-shadow:0 8px 32px rgba(0,229,255,0.15),0 0 80px rgba(0,229,255,0.08)}
+.card[data-project="gg"]:hover{box-shadow:0 8px 32px rgba(168,85,247,0.15),0 0 80px rgba(168,85,247,0.08)}
+.card[data-project="sophie"]:hover{box-shadow:0 8px 32px rgba(59,130,246,0.15),0 0 80px rgba(59,130,246,0.08)}
+
+/* ══════ FOOTER ══════ */
+.footer{
+  text-align:center;padding:40px 24px 60px;
+  color:rgba(255,255,255,0.25);font-size:0.8rem;letter-spacing:0.1em;
+}
+
+/* ══════ SOUND TOGGLE ══════ */
+.sound-toggle{
+  position:fixed;bottom:24px;right:24px;z-index:100;
+  width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,0.15);
+  background:rgba(0,0,0,0.4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all 0.3s;color:#fff;
+}
+.sound-toggle:hover{border-color:rgba(0,229,255,0.4);box-shadow:0 0 20px rgba(0,229,255,0.15)}
+.sound-toggle svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* ══════ RESPONSIVE ══════ */
+@media(max-width:768px){
+  .card-inner{flex-direction:column}
+  .card-media{flex:none;height:220px}
+  .card-body{padding:24px}
+  .card-expand-inner{padding:0 24px 24px}
+  .hero-title{font-size:clamp(3rem,15vw,5rem)}
+  .card-stat{font-size:1.4rem}
+  .projects{padding:20px 0 80px}
+}
+
+/* ══════ REDUCED MOTION ══════ */
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:0s!important;transition-duration:0s!important}
 }
 </style>
 </head>
 <body>
-<canvas id="bg"></canvas>
-<div id="ui">
-  <div id="title">Keiran</div>
-  <div id="sound-toggle" aria-label="Toggle sound">
-    <svg id="sound-icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-  </div>
-  <div id="yt-container"></div>
+
+<!-- Ocean Background -->
+<div class="ocean-bg">
+  <img src="https://images.pexels.com/photos/4666753/pexels-photo-4666753.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop" 
+       alt="" loading="eager" decoding="async">
 </div>
-<div id="overlay">
-  <div id="overlay-bg"></div>
-  <div id="detail">
-    <div id="close-btn"></div>
-    <h2 id="d-title"></h2>
-    <div class="year" id="d-year"></div>
-    <div class="desc" id="d-desc"></div>
-    <div class="raised" id="d-raised"></div>
-    <div class="links" id="d-links"></div>
-  </div>
+<div class="ocean-overlay"></div>
+
+<!-- Light Rays -->
+<div class="light-rays">
+  <div class="ray"></div><div class="ray"></div><div class="ray"></div>
+  <div class="ray"></div><div class="ray"></div>
+</div>
+
+<!-- Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Main Content -->
+<div class="content">
+  
+  <!-- Hero -->
+  <section class="hero">
+    <h1 class="hero-title">KEIRAN</h1>
+    <p class="hero-sub">builder · shipping at the edge</p>
+    <div class="scroll-hint">
+      <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section class="projects">
+    <p class="section-label">Selected Projects</p>
+
+    <!-- Mirage -->
+    <div class="card" data-project="mirage" onclick="toggleCard(this)">
+      <div class="card-inner">
+        <div class="card-media">
+          <img src="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/03/a4/ce/03a4ce62-4804-46d3-eb0a-e7af4e4f1960/0a0cc723-b1c2-414d-98e3-05c4ef875110_Simulator_Screenshot_-_iPhone_15_Pro_Max_-_2024-01-19_at_17.43.50.png/600x0w.webp" 
+               alt="Mirage AR app screenshot" loading="lazy">
+        </div>
+        <div class="card-body">
+          <div class="card-tag"><span class="dot"></span> AR / Crypto</div>
+          <h2 class="card-name">Mirage</h2>
+          <p class="card-tagline">AR meets crypto. Location-based AR experiences with token incentives.</p>
+          <div class="card-stat">$1.3M</div>
+          <div class="card-stat-label">Raised from Delphi Digital</div>
+          <p class="card-desc">Transform media into 3D magic. Real-time AR editing, dynamic experiences, integrated spatial audio. Built for everyone.</p>
+          <div class="card-links">
+            <a href="https://mirage.ar" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              mirage.ar
+            </a>
+            <a href="https://apps.apple.com/us/app/mirage-studio/id1671886519" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83"/><path d="M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              App Store
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GG -->
+    <div class="card" data-project="gg" onclick="toggleCard(this)">
+      <div class="card-inner">
+        <div class="card-media">
+          <img src="https://pbs.twimg.com/profile_banners/1808876295536627712/1720054773/1500x500" 
+               alt="GG Crypto Hunger Games" loading="lazy">
+        </div>
+        <div class="card-body">
+          <div class="card-tag"><span class="dot"></span> Gaming / Crypto</div>
+          <h2 class="card-name">GG — Crypto Hunger Games</h2>
+          <p class="card-tagline">PokemonGo meets memecoins. Real-time game streaming platform.</p>
+          <div class="card-stat">110K followers</div>
+          <div class="card-stat-label">In 3 days · $700K raised</div>
+          <p class="card-desc">Live-streamed crypto game show that went viral. Players hunt memecoins in real-time while audiences bet on outcomes.</p>
+          <div class="card-links">
+            <a href="https://x.com/NashGGs" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><path d="M4 4l11.733 16h4.267l-11.733-16zM4 20l6.768-6.768M20 4l-6.768 6.768"/></svg>
+              @NashGGs
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="card-expand">
+        <div class="card-expand-inner">
+          <div class="video-embed">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="GG gameplay" loading="lazy" allowfullscreen 
+                    data-src-x="https://x.com/NashGGs/status/1808877799790248246"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sophie -->
+    <div class="card" data-project="sophie" onclick="toggleCard(this)">
+      <div class="card-inner">
+        <div class="card-media">
+          <img src="https://scontent.oculuscdn.com/v/t64.5771-25/q92/s720x720/75484389_8890843394267506_5625282261044127744_n.jpg" 
+               alt="Sophie AI Companion on Meta Quest" loading="lazy"
+               onerror="this.src='https://images.pexels.com/photos/8721342/pexels-photo-8721342.jpeg?auto=compress&cs=tinysrgb&w=600'">
+        </div>
+        <div class="card-body">
+          <div class="card-tag"><span class="dot"></span> AI / VR</div>
+          <h2 class="card-name">Sophie</h2>
+          <p class="card-tagline">First AI companion on Meta Quest. Unreal MetaHuman + ElevenLabs.</p>
+          <div class="card-stat">Meta Quest</div>
+          <div class="card-stat-label">Shipped · Generated Revenue</div>
+          <p class="card-desc">Hyper-realistic AI companion built with Unreal Engine MetaHumans and ElevenLabs voice. Passed Meta's full platform review.</p>
+          <div class="card-links">
+            <a href="https://www.meta.com/experiences/sophie/8890839327601249/" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path d="M9 12l2 2 4-4"/></svg>
+              Meta Quest Store
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <footer class="footer">keiran.ai</footer>
+</div>
+
+<!-- Sound Toggle -->
+<button class="sound-toggle" id="soundToggle" onclick="toggleSound()" aria-label="Toggle sound">
+  <svg id="soundOff" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+  <svg id="soundOn" viewBox="0 0 24 24" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+</button>
+
+<!-- YouTube Audio (hidden) -->
+<div id="ytPlayer" style="position:fixed;bottom:-200px;left:-200px;width:1px;height:1px;overflow:hidden;pointer-events:none">
+  <iframe id="ytFrame" width="1" height="1" src="https://www.youtube.com/embed/HhZaHf8RP6g?enablejsapi=1&loop=1&playlist=HhZaHf8RP6g&autoplay=0&controls=0" 
+          allow="autoplay" frameborder="0"></iframe>
 </div>
 
 <script>
-// ===== PROJECT DATA =====
-const projects = [
-  {
-    name: 'Mirage',
-    year: '2022 – 2024',
-    desc: 'AR meets crypto. A persistent multiplayer AR experience — create, explore, and collect location-based digital art with token incentives.',
-    raised: 'Raised $1.3M from Delphi Digital',
-    links: [
-      { label: 'Website', url: 'https://mirage.ar/' },
-      { label: 'App Store', url: 'https://apps.apple.com/us/app/mirage-studio/id1671886519' }
-    ],
-    color: [0, 180, 255],      // cyan-blue bioluminescence
-    glowColor: 'rgba(0,180,255,',
-    size: 1.0
-  },
-  {
-    name: 'GG',
-    year: '2024',
-    desc: 'PokemonGo meets memecoins. A crypto hunger games that pulled 110K followers in 3 days. Real-time game streaming meets onchain chaos.',
-    raised: 'Raised $700K',
-    links: [
-      { label: 'Watch Video', url: 'https://x.com/NashGGs/status/1808877799790248246' }
-    ],
-    color: [0, 255, 140],      // green bioluminescence
-    glowColor: 'rgba(0,255,140,',
-    size: 0.85
-  },
-  {
-    name: 'Sophie',
-    year: '2024 – 2025',
-    desc: 'The first AI companion on Meta Quest. Unreal MetaHuman with ElevenLabs voice. Shipped through Meta\'s platform review. Generated revenue.',
-    raised: 'Revenue-generating',
-    links: [
-      { label: 'Meta Quest', url: 'https://www.meta.com/experiences/sophie/8890839327601249/' }
-    ],
-    color: [200, 100, 255],    // purple bioluminescence
-    glowColor: 'rgba(200,100,255,',
-    size: 0.9
+// ══════ PARTICLES ══════
+(function initParticles(){
+  const c=document.getElementById('particles');
+  const isMobile=window.innerWidth<768;
+  const count=isMobile?15:35;
+  for(let i=0;i<count;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    const s=Math.random()*3+1;
+    const dur=Math.random()*20+15;
+    const left=Math.random()*100;
+    const delay=Math.random()*dur;
+    const drift=(Math.random()-0.5)*100;
+    p.style.cssText=`
+      width:${s}px;height:${s}px;left:${left}%;
+      animation-duration:${dur}s;animation-delay:-${delay}s;
+      --drift:${drift}px;
+      opacity:${Math.random()*0.6+0.2};
+    `;
+    c.appendChild(p);
   }
-];
+})();
 
-// ===== CANVAS SETUP =====
-const canvas = document.getElementById('bg');
-const ctx = canvas.getContext('2d');
-let W, H, dpr;
-let mouseX = -9999, mouseY = -9999;
-let touching = false;
-
-function resize() {
-  dpr = Math.min(window.devicePixelRatio || 1, 2);
-  W = window.innerWidth;
-  H = window.innerHeight;
-  canvas.width = W * dpr;
-  canvas.height = H * dpr;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  // Reposition creatures
-  positionCreatures();
-}
-window.addEventListener('resize', resize);
-
-// ===== PARTICLES =====
-const particles = [];
-const PARTICLE_COUNT = 180;
-
-function initParticles() {
-  particles.length = 0;
-  for (let i = 0; i < PARTICLE_COUNT; i++) {
-    particles.push({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      vx: (Math.random() - 0.5) * 0.15,
-      vy: (Math.random() - 0.5) * 0.15 - 0.05,
-      r: Math.random() * 1.8 + 0.3,
-      alpha: Math.random() * 0.4 + 0.05,
-      pulse: Math.random() * Math.PI * 2,
-      pulseSpeed: Math.random() * 0.008 + 0.003,
-      hue: Math.random() * 60 + 170 // 170-230 range (blue-cyan)
-    });
-  }
-}
-
-function updateParticles() {
-  for (const p of particles) {
-    p.pulse += p.pulseSpeed;
-    const pa = p.alpha + Math.sin(p.pulse) * 0.15;
-
-    // Mouse interaction
-    const dx = p.x - mouseX;
-    const dy = p.y - mouseY;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < 150) {
-      const force = (150 - dist) / 150 * 0.3;
-      p.vx += (dx / dist) * force;
-      p.vy += (dy / dist) * force;
-    }
-
-    p.vx *= 0.98;
-    p.vy *= 0.98;
-    p.x += p.vx;
-    p.y += p.vy;
-
-    // Wrap
-    if (p.x < -10) p.x = W + 10;
-    if (p.x > W + 10) p.x = -10;
-    if (p.y < -10) p.y = H + 10;
-    if (p.y > H + 10) p.y = -10;
-
-    // Draw
-    const a = Math.max(0, Math.min(1, pa));
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    ctx.fillStyle = `hsla(${p.hue},80%,70%,${a})`;
-    ctx.fill();
-
-    // Glow
-    if (p.r > 1) {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
-      ctx.fillStyle = `hsla(${p.hue},80%,60%,${a * 0.15})`;
-      ctx.fill();
-    }
-  }
-}
-
-// ===== CREATURES =====
-const creatures = [];
-let hoveredCreature = null;
-let activeCreature = null;
-
-function positionCreatures() {
-  const isMobile = W < 600;
-  const positions = isMobile
-    ? [
-        { x: W * 0.5, y: H * 0.28 },
-        { x: W * 0.3, y: H * 0.52 },
-        { x: W * 0.7, y: H * 0.73 }
-      ]
-    : [
-        { x: W * 0.22, y: H * 0.45 },
-        { x: W * 0.52, y: H * 0.55 },
-        { x: W * 0.78, y: H * 0.4 }
-      ];
-
-  for (let i = 0; i < projects.length; i++) {
-    if (!creatures[i]) {
-      creatures[i] = {
-        baseX: positions[i].x,
-        baseY: positions[i].y,
-        x: positions[i].x,
-        y: positions[i].y,
-        phase: Math.random() * Math.PI * 2,
-        tentaclePhase: Math.random() * Math.PI * 2,
-        hoverAmt: 0,
-        project: projects[i]
-      };
-    } else {
-      creatures[i].baseX = positions[i].x;
-      creatures[i].baseY = positions[i].y;
-    }
-  }
-}
-
-function drawCreature(c, time) {
-  const p = c.project;
-  const baseSize = (W < 600 ? 40 : 60) * p.size;
-  const hover = c.hoverAmt;
-  const size = baseSize * (1 + hover * 0.2);
-  const [r, g, b] = p.color;
-
-  // Drift
-  c.phase += 0.004;
-  c.tentaclePhase += 0.015;
-  c.x = c.baseX + Math.sin(c.phase) * 15 + Math.cos(c.phase * 0.7) * 8;
-  c.y = c.baseY + Math.cos(c.phase * 0.8) * 12 + Math.sin(c.phase * 0.5) * 6;
-
-  const pulse = 0.7 + Math.sin(time * 0.0015 + c.phase) * 0.3;
-  const glowAlpha = (0.12 + hover * 0.15) * pulse;
-  const bodyAlpha = (0.35 + hover * 0.35) * pulse;
-
-  ctx.save();
-  ctx.translate(c.x, c.y);
-
-  // Outer glow
-  const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 3);
-  grad.addColorStop(0, `rgba(${r},${g},${b},${glowAlpha})`);
-  grad.addColorStop(0.4, `rgba(${r},${g},${b},${glowAlpha * 0.3})`);
-  grad.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.beginPath();
-  ctx.arc(0, 0, size * 3, 0, Math.PI * 2);
-  ctx.fillStyle = grad;
-  ctx.fill();
-
-  // Bell (jellyfish dome) — organic shape using bezier curves
-  ctx.beginPath();
-  const bellH = size * 0.7;
-  const bellW = size * 0.9;
-  const wobble1 = Math.sin(c.tentaclePhase) * size * 0.04;
-  const wobble2 = Math.cos(c.tentaclePhase * 1.3) * size * 0.03;
-
-  ctx.moveTo(-bellW, size * 0.1);
-  ctx.bezierCurveTo(-bellW + wobble1, -bellH * 0.5, -bellW * 0.3, -bellH - wobble2, 0, -bellH);
-  ctx.bezierCurveTo(bellW * 0.3, -bellH + wobble2, bellW - wobble1, -bellH * 0.5, bellW, size * 0.1);
-  ctx.bezierCurveTo(bellW * 0.6, size * 0.2, -bellW * 0.6, size * 0.2, -bellW, size * 0.1);
-
-  const bellGrad = ctx.createRadialGradient(0, -bellH * 0.3, 0, 0, -bellH * 0.3, size);
-  bellGrad.addColorStop(0, `rgba(${r},${g},${b},${bodyAlpha * 0.8})`);
-  bellGrad.addColorStop(0.5, `rgba(${r},${g},${b},${bodyAlpha * 0.3})`);
-  bellGrad.addColorStop(1, `rgba(${r},${g},${b},0)`);
-  ctx.fillStyle = bellGrad;
-  ctx.fill();
-
-  // Inner luminous core
-  const coreGrad = ctx.createRadialGradient(0, -bellH * 0.3, 0, 0, -bellH * 0.3, size * 0.35);
-  coreGrad.addColorStop(0, `rgba(255,255,255,${bodyAlpha * 0.6})`);
-  coreGrad.addColorStop(0.5, `rgba(${r},${g},${b},${bodyAlpha * 0.4})`);
-  coreGrad.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.beginPath();
-  ctx.arc(0, -bellH * 0.3, size * 0.35, 0, Math.PI * 2);
-  ctx.fillStyle = coreGrad;
-  ctx.fill();
-
-  // Tentacles
-  const tentCount = 7;
-  for (let t = 0; t < tentCount; t++) {
-    const tx = -bellW * 0.7 + (bellW * 1.4 / (tentCount - 1)) * t;
-    const tentLen = size * (0.8 + Math.sin(c.tentaclePhase + t * 0.8) * 0.3);
-    const sway = Math.sin(c.tentaclePhase * 0.7 + t * 1.2) * size * 0.25;
-    const sway2 = Math.cos(c.tentaclePhase * 0.5 + t * 0.9) * size * 0.15;
-
-    ctx.beginPath();
-    ctx.moveTo(tx, size * 0.1);
-    ctx.bezierCurveTo(
-      tx + sway * 0.3, size * 0.1 + tentLen * 0.3,
-      tx + sway, size * 0.1 + tentLen * 0.6,
-      tx + sway + sway2, size * 0.1 + tentLen
-    );
-    ctx.strokeStyle = `rgba(${r},${g},${b},${bodyAlpha * (0.2 + Math.sin(c.tentaclePhase + t) * 0.1)})`;
-    ctx.lineWidth = 1.5 - t * 0.05;
-    ctx.stroke();
-
-    // Glowing dots along tentacles
-    if (t % 2 === 0) {
-      const dotY = size * 0.1 + tentLen * (0.4 + Math.sin(c.tentaclePhase * 0.3 + t) * 0.15);
-      const dotX = tx + sway * 0.4;
-      ctx.beginPath();
-      ctx.arc(dotX, dotY, 1.5, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${r},${g},${b},${bodyAlpha * 0.6})`;
-      ctx.fill();
-    }
-  }
-
-  // Trailing filaments (longer, thinner)
-  for (let f = 0; f < 3; f++) {
-    const fx = -bellW * 0.3 + bellW * 0.3 * f;
-    const fLen = size * (1.5 + Math.sin(c.tentaclePhase * 0.4 + f * 2) * 0.4);
-    const fSway = Math.sin(c.tentaclePhase * 0.3 + f * 1.5) * size * 0.4;
-
-    ctx.beginPath();
-    ctx.moveTo(fx, size * 0.15);
-    ctx.bezierCurveTo(
-      fx + fSway * 0.2, size * 0.15 + fLen * 0.25,
-      fx + fSway * 0.7, size * 0.15 + fLen * 0.5,
-      fx + fSway, size * 0.15 + fLen
-    );
-    ctx.strokeStyle = `rgba(${r},${g},${b},${bodyAlpha * 0.08})`;
-    ctx.lineWidth = 0.5;
-    ctx.stroke();
-  }
-
-  ctx.restore();
-
-  // Label
-  if (hover > 0.1) {
-    ctx.save();
-    ctx.globalAlpha = hover;
-    ctx.font = '700 13px "Space Grotesk"';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = `rgba(${r},${g},${b},${hover})`;
-    ctx.letterSpacing = '3px';
-    ctx.fillText(p.name.toUpperCase(), c.x, c.y - size * 1.4);
-    ctx.restore();
-  }
-}
-
-function hitTestCreature(mx, my) {
-  for (let i = creatures.length - 1; i >= 0; i--) {
-    const c = creatures[i];
-    const size = (W < 600 ? 40 : 60) * c.project.size;
-    const dx = mx - c.x;
-    const dy = my - c.y;
-    if (dx * dx + dy * dy < (size * 1.5) * (size * 1.5)) return c;
-  }
-  return null;
-}
-
-// ===== DETAIL OVERLAY =====
-const overlay = document.getElementById('overlay');
-const overlayBg = document.getElementById('overlay-bg');
-
-function showDetail(c) {
-  activeCreature = c;
-  const p = c.project;
-  document.getElementById('d-title').textContent = p.name;
-  document.getElementById('d-year').textContent = p.year;
-  document.getElementById('d-desc').textContent = p.desc;
-  document.getElementById('d-raised').textContent = p.raised;
-
-  const linksEl = document.getElementById('d-links');
-  linksEl.innerHTML = '';
-  for (const l of p.links) {
-    const a = document.createElement('a');
-    a.href = l.url;
-    a.target = '_blank';
-    a.rel = 'noopener';
-    a.textContent = l.label;
-    linksEl.appendChild(a);
-  }
-
-  // Color the title
-  const [r, g, b] = p.color;
-  document.getElementById('d-title').style.color = `rgb(${r},${g},${b})`;
-
-  overlay.classList.add('active');
-}
-
-function hideDetail() {
-  overlay.classList.remove('active');
-  activeCreature = null;
-}
-
-overlayBg.addEventListener('click', hideDetail);
-document.getElementById('close-btn').addEventListener('click', hideDetail);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') hideDetail(); });
-
-// ===== INPUT =====
-canvas.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
-canvas.addEventListener('mouseleave', () => { mouseX = -9999; mouseY = -9999; });
-canvas.addEventListener('click', e => {
-  const c = hitTestCreature(e.clientX, e.clientY);
-  if (c) showDetail(c);
+// ══════ PARALLAX ══════
+document.addEventListener('mousemove',function(e){
+  const x=(e.clientX/window.innerWidth-0.5)*2;
+  const y=(e.clientY/window.innerHeight-0.5)*2;
+  document.querySelectorAll('.card').forEach((card,i)=>{
+    const f=(i+1)*2;
+    card.style.transform=`translateY(${-y*f}px) translateX(${-x*f}px)`;
+  });
 });
 
-canvas.addEventListener('touchstart', e => {
-  const t = e.touches[0];
-  mouseX = t.clientX;
-  mouseY = t.clientY;
-  touching = true;
-}, { passive: true });
-canvas.addEventListener('touchmove', e => {
-  const t = e.touches[0];
-  mouseX = t.clientX;
-  mouseY = t.clientY;
-}, { passive: true });
-canvas.addEventListener('touchend', e => {
-  if (touching) {
-    const c = hitTestCreature(mouseX, mouseY);
-    if (c) showDetail(c);
-  }
-  setTimeout(() => { mouseX = -9999; mouseY = -9999; touching = false; }, 100);
-}, { passive: true });
-
-// ===== SOUND =====
-let ytPlayer = null;
-let soundOn = false;
-const soundToggle = document.getElementById('sound-toggle');
-const soundIcon = document.getElementById('sound-icon');
-const muteIcon = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
-const playIcon = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
-
-function loadYTAPI() {
-  if (window.YT) return;
-  const tag = document.createElement('script');
-  tag.src = 'https://www.youtube.com/iframe_api';
-  document.head.appendChild(tag);
+// ══════ CARD EXPAND ══════
+function toggleCard(card){
+  const wasExpanded=card.classList.contains('expanded');
+  document.querySelectorAll('.card.expanded').forEach(c=>c.classList.remove('expanded'));
+  if(!wasExpanded) card.classList.add('expanded');
 }
 
-window.onYouTubeIframeAPIReady = function() {
-  ytPlayer = new YT.Player('yt-container', {
-    height: '1', width: '1',
-    videoId: 'HhZaHf8RP6g',
-    playerVars: { autoplay: 0, loop: 1, playlist: 'HhZaHf8RP6g', controls: 0 },
-    events: {
-      onReady: function(e) {
-        if (soundOn) { e.target.playVideo(); }
-      },
-      onStateChange: function(e) {
-        // Loop
-        if (e.data === YT.PlayerState.ENDED) {
-          e.target.playVideo();
-        }
+// ══════ SOUND ══════
+let soundPlaying=false;
+let ytReady=false;
+let player;
+
+// YouTube IFrame API
+const tag=document.createElement('script');
+tag.src='https://www.youtube.com/iframe_api';
+document.head.appendChild(tag);
+window.onYouTubeIframeAPIReady=function(){
+  player=new YT.Player('ytFrame',{
+    events:{
+      onReady:function(){ytReady=true},
+      onStateChange:function(e){
+        if(e.data===YT.PlayerState.ENDED){player.playVideo()}
       }
     }
   });
 };
 
-soundToggle.addEventListener('click', () => {
-  soundOn = !soundOn;
-  soundIcon.innerHTML = soundOn ? playIcon : muteIcon;
-  if (!window.YT) { loadYTAPI(); return; }
-  if (!ytPlayer) return;
-  if (soundOn) { ytPlayer.playVideo(); }
-  else { ytPlayer.pauseVideo(); }
-});
-
-// Start with mute icon state (show play icon = sound off initially... let's use mute icon)
-soundIcon.innerHTML = muteIcon;
-
-// ===== RENDER LOOP =====
-let lastTime = 0;
-
-function render(time) {
-  ctx.clearRect(0, 0, W, H);
-
-  // Subtle depth gradient
-  const bgGrad = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * 0.7);
-  bgGrad.addColorStop(0, 'rgba(5,8,18,1)');
-  bgGrad.addColorStop(1, 'rgba(0,0,0,1)');
-  ctx.fillStyle = bgGrad;
-  ctx.fillRect(0, 0, W, H);
-
-  // Particles
-  updateParticles();
-
-  // Creatures
-  const hit = hitTestCreature(mouseX, mouseY);
-  for (const c of creatures) {
-    const isHovered = c === hit && !activeCreature;
-    c.hoverAmt += (isHovered ? 0.04 : -0.04);
-    c.hoverAmt = Math.max(0, Math.min(1, c.hoverAmt));
-    drawCreature(c, time);
+function toggleSound(){
+  if(!ytReady)return;
+  if(soundPlaying){
+    player.pauseVideo();
+    document.getElementById('soundOff').style.display='';
+    document.getElementById('soundOn').style.display='none';
+  } else {
+    player.playVideo();
+    player.setVolume(30);
+    document.getElementById('soundOff').style.display='none';
+    document.getElementById('soundOn').style.display='';
   }
-
-  // Cursor
-  canvas.style.cursor = hit && !activeCreature ? 'pointer' : 'default';
-
-  requestAnimationFrame(render);
+  soundPlaying=!soundPlaying;
 }
 
-// ===== INIT =====
-resize();
-initParticles();
-requestAnimationFrame(render);
+// ══════ INTERSECTION OBSERVER (fade in cards) ══════
+const obs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.style.opacity='1';
+      e.target.style.transform='translateY(0)';
+    }
+  });
+},{threshold:0.1});
+document.querySelectorAll('.card').forEach(c=>{
+  c.style.opacity='0';
+  c.style.transform='translateY(40px)';
+  c.style.transition='opacity 0.8s cubic-bezier(0.23,1,0.32,1), transform 0.8s cubic-bezier(0.23,1,0.32,1)';
+  obs.observe(c);
+});
 </script>
 </body>
 </html>
