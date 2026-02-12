@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Keiran</title>
+<meta name="description" content="Keiran">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: #000;
+    cursor: crosshair;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #name {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(3rem, 10vw, 8rem);
+    color: #fff;
+    z-index: 9999;
+    pointer-events: none;
+    letter-spacing: -0.03em;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  #canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+  }
+  .tiger {
+    position: absolute;
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+    object-fit: cover;
+    pointer-events: none;
+    will-change: opacity;
+  }
+  .tiger.visible { opacity: 1; }
+</style>
+</head>
+<body>
+<div id="canvas"></div>
+<div id="name">Keiran</div>
+<script>
+(function() {
+  const IDS = [
+    'photo-1454023492550-5696f8ff10e1','photo-1477764250597-dffe9f601ae8','photo-1500463959177-e0869687df26',
+    'photo-1503066211613-c17ebc9daef0','photo-1507318584470-a67407ebe29a','photo-1508817628294-5a453fa0b8fb',
+    'photo-1524132989408-c8ee48d8f147','photo-1526034332220-067b0f400e06','photo-1537616930345-1d330ad3e0a9',
+    'photo-1541949631662-a75f7691e62e','photo-1544830219-00a0e3d3b2f7','photo-1545462616-efed1939219f',
+    'photo-1548184062-8ec2ca93a26c','photo-1548962236-6352f0b72862','photo-1549480017-d76466a4b7e8',
+    'photo-1550973595-c9f4d21f38cc','photo-1551972251-12070d63502a','photo-1553054366-ebbf4296eb32',
+    'photo-1561731216-c3a4d99437d5','photo-1562552476-8ac59b2a2e46','photo-1566794774033-2de8ecd7b17c',
+    'photo-1578181150462-e5a216533483','photo-1584313451920-b58733a2ecca','photo-1586617356423-52763004deac',
+    'photo-1587219408895-24918d2b78af','photo-1589460017165-bbdd02214cfb','photo-1591824438708-ce405f36ba3d',
+    'photo-1598214325784-4b28e27e64e9','photo-1602491453318-dcdf64966d7d','photo-1602491453439-8f207298a202',
+    'photo-1602491453631-e2a5ad90a131','photo-1602909554201-06486b9b5c72','photo-1605092676920-8ac5ae40c7c8',
+    'photo-1608993659340-d99016d296df','photo-1612531760869-929bf737386b','photo-1612975631838-719497229ee4',
+    'photo-1612975702762-7cc2733b3e75','photo-1613132272170-15e05bd40713','photo-1615474286632-e31ac3633d58',
+    'photo-1615824996195-f780bba7cfab','photo-1615963244664-5b845b2025ee','photo-1616869736810-a674a04d0440',
+    'photo-1616869736815-3362745ab32d','photo-1617977505056-f5ea2633eda5','photo-1619475762212-da12e5e15f18',
+    'photo-1623494342806-791ae5450a54','photo-1623494344194-e6e9462ef944','photo-1623935900939-75e2d1d2995a',
+    'photo-1623995523843-f282cd8aa1d7','photo-1626344235424-c599aa1c9b61','photo-1630768555357-143ea9ebcb13',
+    'photo-1638249243194-7db6a28a9de9','photo-1640957507202-6e5ad7cd3365','photo-1644942888667-8ec2c05d7f01',
+    'photo-1645517379284-10008b2ada22','photo-1645517387524-ed915045c2bf','photo-1649253902869-6659891d11fd',
+    'photo-1651464524587-e35be1f9b4cc','photo-1654712151700-fd9f92eb7c53','photo-1655750055962-785513a1ff1d',
+    'photo-1657213441073-c164a5ef6713','photo-1659879622193-f61183e74a0c','photo-1661206109036-c10ce31fc86c',
+    'photo-1661206109053-94b22a75968c','photo-1661206110069-019805425576','photo-1661222039249-02101c490c67',
+    'photo-1661222039766-370ca0a16d1b','photo-1661222040164-7d73504f7ff1','photo-1661222483611-cd1575459449',
+    'photo-1661769212734-67877c79deff','photo-1661857868021-d219199763b4','photo-1661906084290-57b10072e66d',
+    'photo-1662071589780-36a5ee4c4beb','photo-1667757698092-cc387285e7d6','photo-1670421291781-4d54641ded9e',
+    'photo-1671122548270-9dc65f2bbed2','photo-1671132313213-474849d6065a','photo-1672053443159-570c46bc118b',
+    'photo-1672657803412-55d2a7f11c45','photo-1673632337424-fa3c84437078','photo-1676744843382-11120c77b34e',
+    'photo-1677936181615-9ec066472b99','photo-1677936181651-6e356c749fb0','photo-1677936181664-c34b63c3e3e0',
+    'photo-1677936181683-24cf515b97ae','photo-1677936181719-921944157f58','photo-1677936181737-02e8165e7392',
+    'photo-1686648420191-3a4d35073fd6','photo-1687456767760-ced0514ffefa','photo-1689176796800-ab67fbf93329',
+    'photo-1693628773083-461156109476','photo-1694615040908-97388c97b338','photo-1696636397656-c70b3a881768',
+    'photo-1698382439843-ca033a6079c0','photo-1698586582840-a00a2fd7eec4','photo-1698586730784-7ce46963efb9',
+    'photo-1700197742784-d11e41543b99','photo-1704852144181-fd3c421daad7','photo-1704852154492-baad4710252e',
+    'photo-1710639046511-38523d4b0b1f','photo-1710639046619-b69fa8b71536','photo-1720108430550-017dcd3e3dcc',
+    'photo-1724441716992-b36c420bb834','photo-1730014392438-317437a03007','photo-1730014392621-10de7b9bc20f',
+    'photo-1732665128161-266666d93709','photo-1736411801310-489cbefb5b0e','photo-1736950638383-723d12c63cd9',
+    'photo-1744372014211-025ba28e40f6','photo-1747680008347-1044a19b5bce','photo-1768403917174-d8470d9e4730',
+    'photo-1769538012116-b26a4cecbcf7','photo-1770756248904-6031ad07223f'
+  ];
+
+  // Shuffle array
+  for (let i = IDS.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [IDS[i], IDS[j]] = [IDS[j], IDS[i]];
+  }
+
+  const canvas = document.getElementById('canvas');
+  let idx = 0;
+  let lastX = -999, lastY = -999;
+  const MIN_DIST = 55;
+  const PRELOAD_AHEAD = 10;
+  const preloaded = [];
+
+  function url(id) {
+    return 'https://images.unsplash.com/' + id + '?w=300&h=300&fit=crop&q=75&auto=format';
+  }
+
+  function preload() {
+    while (preloaded.length < PRELOAD_AHEAD && idx < IDS.length) {
+      const img = new Image();
+      img.src = url(IDS[idx]);
+      preloaded.push(img);
+      idx++;
+    }
+    // Loop around if we've used all
+    if (idx >= IDS.length) idx = 0;
+  }
+
+  preload();
+
+  function spawn(x, y) {
+    const dx = x - lastX, dy = y - lastY;
+    if (dx * dx + dy * dy < MIN_DIST * MIN_DIST) return;
+    lastX = x; lastY = y;
+
+    if (preloaded.length === 0) { preload(); return; }
+    const pre = preloaded.shift();
+    preload();
+
+    const size = 70 + Math.random() * 130;
+    const rot = (Math.random() - 0.5) * 35;
+
+    const el = document.createElement('img');
+    el.src = pre.src;
+    el.className = 'tiger';
+    el.width = size;
+    el.height = size;
+    el.style.cssText = 'left:' + (x - size / 2) + 'px;top:' + (y - size / 2) + 'px;transform:rotate(' + rot + 'deg);border-radius:' + (Math.random() > 0.5 ? '2px' : '50%');
+    canvas.appendChild(el);
+    requestAnimationFrame(function() { el.classList.add('visible'); });
+
+    // Cap DOM nodes for performance
+    if (canvas.childElementCount > 250) {
+      canvas.removeChild(canvas.firstElementChild);
+    }
+  }
+
+  // Throttle to ~60fps max
+  let ticking = false;
+  function onMove(x, y) {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function() {
+      spawn(x, y);
+      ticking = false;
+    });
+  }
+
+  document.addEventListener('mousemove', function(e) { onMove(e.clientX, e.clientY); });
+  document.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+    onMove(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: false });
+  document.addEventListener('touchstart', function(e) {
+    lastX = -999; lastY = -999;
+    onMove(e.touches[0].clientX, e.touches[0].clientY);
+  });
+})();
+</script>
+</body>
+</html>
