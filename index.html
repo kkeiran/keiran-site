@@ -49,11 +49,31 @@
     will-change: opacity;
   }
   .tiger.visible { opacity: 1; }
+  #music-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99999;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.75rem;
+    padding: 8px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: opacity 0.3s;
+    letter-spacing: 0.05em;
+  }
+  #music-toggle:hover { background: rgba(255,255,255,0.15); }
 </style>
 </head>
 <body>
 <div id="canvas"></div>
 <div id="name">Keiran</div>
+<button id="music-toggle" onclick="toggleMusic()">♪ PLAY</button>
+<iframe id="yt-player" src="https://www.youtube.com/embed/HhZaHf8RP6g?autoplay=0&loop=1&playlist=HhZaHf8RP6g&controls=0&showinfo=0&modestbranding=1&enablejsapi=1" style="display:none" allow="autoplay"></iframe>
 <script>
 (function() {
   const IDS = [
@@ -175,6 +195,23 @@
     onMove(e.touches[0].clientX, e.touches[0].clientY);
   });
 })();
+
+// Music control
+let musicPlaying = false;
+const ytFrame = document.getElementById('yt-player');
+const musicBtn = document.getElementById('music-toggle');
+
+function toggleMusic() {
+  if (!musicPlaying) {
+    ytFrame.src = 'https://www.youtube.com/embed/HhZaHf8RP6g?autoplay=1&loop=1&playlist=HhZaHf8RP6g&controls=0&showinfo=0&modestbranding=1';
+    musicBtn.textContent = '♪ PAUSE';
+    musicPlaying = true;
+  } else {
+    ytFrame.src = 'https://www.youtube.com/embed/HhZaHf8RP6g?autoplay=0&loop=1&playlist=HhZaHf8RP6g&controls=0&showinfo=0&modestbranding=1';
+    musicBtn.textContent = '♪ PLAY';
+    musicPlaying = false;
+  }
+}
 </script>
 </body>
 </html>
