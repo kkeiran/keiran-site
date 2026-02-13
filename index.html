@@ -4,478 +4,79 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Keiran</title>
-<meta name="description" content="Builder. Mirage, GG, Sophie.">
+<meta name="description" content="Keiran — builder, storyteller, founder.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --cyan:#00e5ff;--teal:#00bcd4;--blue:#0077ff;--purple:#a855f7;
-  --glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.12);
-}
-html{scroll-behavior:smooth}
+html,body{height:100%;overflow:hidden}
 body{
   font-family:'Space Grotesk',sans-serif;
-  background:#020b18;color:#fff;overflow-x:hidden;
-  min-height:100vh;
+  background:#0a0a0a;color:#fff;
+  display:flex;align-items:center;justify-content:center;
 }
 
-/* ══════ OCEAN BACKGROUND ══════ */
-.ocean-bg{
-  position:fixed;inset:0;z-index:0;
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(0,119,255,0.15) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 50% at 20% 80%, rgba(0,229,255,0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 80% 70%, rgba(168,85,247,0.06) 0%, transparent 60%);
-}
-.ocean-bg img{
-  width:100%;height:100%;object-fit:cover;
-  opacity:0.45;filter:brightness(0.6) saturate(1.3) contrast(1.1);
-}
-.ocean-overlay{
-  position:fixed;inset:0;z-index:1;
-  background:
-    linear-gradient(180deg, rgba(2,11,24,0.3) 0%, rgba(2,11,24,0.1) 40%, rgba(2,11,24,0.5) 100%),
-    radial-gradient(ellipse 120% 80% at 50% 0%, rgba(0,119,255,0.12) 0%, transparent 60%);
+/* Subtle grain */
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
   pointer-events:none;
 }
 
-/* ══════ LIGHT RAYS ══════ */
-.light-rays{
-  position:fixed;top:-20%;left:50%;transform:translateX(-50%);
-  width:140%;height:70%;z-index:1;pointer-events:none;opacity:0.3;
-}
-.light-rays .ray{
-  position:absolute;top:0;
-  width:2px;height:100%;
-  background:linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(0,229,255,0.1) 40%, transparent 100%);
-  filter:blur(8px);
-  animation:rayFloat 8s ease-in-out infinite;
-}
-.light-rays .ray:nth-child(1){left:15%;width:3px;animation-delay:0s;opacity:0.6}
-.light-rays .ray:nth-child(2){left:30%;width:2px;animation-delay:1.5s;opacity:0.4}
-.light-rays .ray:nth-child(3){left:50%;width:4px;animation-delay:0.8s;opacity:0.5}
-.light-rays .ray:nth-child(4){left:65%;width:2px;animation-delay:2.2s;opacity:0.3}
-.light-rays .ray:nth-child(5){left:80%;width:3px;animation-delay:1s;opacity:0.45}
-@keyframes rayFloat{
-  0%,100%{transform:translateX(0) scaleY(1);opacity:0.3}
-  50%{transform:translateX(10px) scaleY(1.05);opacity:0.5}
+/* Glow orb */
+.glow{
+  position:fixed;
+  width:600px;height:600px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,0.03) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  pointer-events:none;z-index:0;
 }
 
-/* ══════ PARTICLES ══════ */
-.particles{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
-.particle{
-  position:absolute;border-radius:50%;
-  background:radial-gradient(circle,rgba(255,255,255,0.8) 0%,rgba(0,229,255,0.3) 60%,transparent 100%);
-  animation:particleDrift linear infinite;
-}
-@keyframes particleDrift{
-  0%{transform:translateY(110vh) translateX(0);opacity:0}
-  10%{opacity:1}
-  90%{opacity:1}
-  100%{transform:translateY(-10vh) translateX(var(--drift));opacity:0}
+.container{
+  position:relative;z-index:1;
+  text-align:center;
+  padding:24px;
 }
 
-/* ══════ MAIN CONTENT ══════ */
-.content{position:relative;z-index:10;min-height:100vh;padding:0 24px}
-
-/* ══════ HERO ══════ */
-.hero{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  min-height:100vh;text-align:center;padding-top:60px;
-}
-.hero-title{
-  font-size:clamp(4rem,12vw,9rem);font-weight:700;letter-spacing:0.04em;
-  background:linear-gradient(180deg,#fff 20%,rgba(0,229,255,0.7) 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  text-shadow:none;filter:drop-shadow(0 0 40px rgba(0,229,255,0.3));
-  animation:heroGlow 4s ease-in-out infinite alternate;
-}
-@keyframes heroGlow{
-  0%{filter:drop-shadow(0 0 30px rgba(0,229,255,0.2))}
-  100%{filter:drop-shadow(0 0 60px rgba(0,229,255,0.4))}
-}
-.hero-sub{
-  margin-top:16px;font-size:clamp(1rem,2.5vw,1.3rem);font-weight:400;
-  color:rgba(255,255,255,0.5);letter-spacing:0.15em;text-transform:uppercase;
-}
-.scroll-hint{
-  margin-top:60px;opacity:0.4;animation:bob 2s ease-in-out infinite;
-}
-.scroll-hint svg{width:24px;height:24px;stroke:#fff;stroke-width:2;fill:none}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
-
-/* ══════ PROJECTS SECTION ══════ */
-.projects{
-  max-width:1200px;margin:0 auto;padding:40px 0 120px;
-}
-.section-label{
-  text-align:center;font-size:0.85rem;letter-spacing:0.25em;text-transform:uppercase;
-  color:rgba(255,255,255,0.3);margin-bottom:60px;
+h1{
+  font-size:clamp(5rem,15vw,12rem);
+  font-weight:700;
+  letter-spacing:0.02em;
+  line-height:0.9;
+  color:#fff;
 }
 
-/* ══════ PROJECT CARD ══════ */
-.card{
-  position:relative;
-  background:var(--glass);
-  border:1px solid var(--glass-border);
-  border-radius:24px;
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  padding:0;margin-bottom:48px;
-  overflow:hidden;cursor:pointer;
-  transition:transform 0.5s cubic-bezier(0.23,1,0.32,1),
-             box-shadow 0.5s cubic-bezier(0.23,1,0.32,1),
-             border-color 0.3s;
-  animation:cardFloat var(--float-dur,6s) ease-in-out infinite;
-  animation-delay:var(--float-delay,0s);
+.links{
+  margin-top:32px;
+  display:flex;gap:24px;justify-content:center;
+  flex-wrap:wrap;
 }
-@keyframes cardFloat{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-8px)}
+.links a{
+  font-size:0.9rem;
+  color:rgba(255,255,255,0.35);
+  text-decoration:none;
+  letter-spacing:0.1em;
+  text-transform:lowercase;
+  transition:color 0.3s;
 }
-.card:hover{
-  transform:translateY(-12px) scale(1.01) !important;
-  border-color:rgba(0,229,255,0.3);
-  box-shadow:
-    0 8px 32px rgba(0,229,255,0.15),
-    0 0 80px rgba(0,229,255,0.08),
-    inset 0 1px 0 rgba(255,255,255,0.1);
-}
-.card-inner{display:flex;gap:0;align-items:stretch;min-height:320px}
-.card-media{
-  flex:0 0 45%;position:relative;overflow:hidden;
-  background:#0a1628;
-}
-.card-media img{
-  width:100%;height:100%;object-fit:cover;
-  transition:transform 0.6s cubic-bezier(0.23,1,0.32,1),filter 0.6s;
-  filter:brightness(0.85) saturate(1.1);
-}
-.card:hover .card-media img{
-  transform:scale(1.05);filter:brightness(1) saturate(1.2);
-}
-.card-body{
-  flex:1;padding:40px;display:flex;flex-direction:column;justify-content:center;
-}
-.card-tag{
-  display:inline-flex;align-items:center;gap:6px;
-  font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;
-  color:var(--accent,var(--cyan));margin-bottom:12px;font-weight:500;
-}
-.card-tag .dot{width:6px;height:6px;border-radius:50%;background:currentColor;
-  box-shadow:0 0 8px currentColor;
-}
-.card-name{
-  font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;margin-bottom:8px;
-  line-height:1.2;
-}
-.card-tagline{
-  font-size:1.05rem;color:rgba(255,255,255,0.7);margin-bottom:16px;line-height:1.5;
-}
-.card-stat{
-  font-size:1.8rem;font-weight:700;margin-bottom:4px;
-  background:linear-gradient(135deg,var(--accent,var(--cyan)),#fff);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-}
-.card-stat-label{font-size:0.8rem;color:rgba(255,255,255,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:20px}
-.card-desc{font-size:0.95rem;color:rgba(255,255,255,0.55);line-height:1.6;margin-bottom:24px}
-.card-links{display:flex;gap:12px;flex-wrap:wrap}
-.card-links a{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:8px 18px;border-radius:100px;font-size:0.85rem;font-weight:500;
-  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);
-  color:#fff;text-decoration:none;transition:all 0.3s;
-}
-.card-links a:hover{
-  background:rgba(0,229,255,0.12);border-color:rgba(0,229,255,0.3);
-  box-shadow:0 0 20px rgba(0,229,255,0.1);
-}
-.card-links a svg{width:14px;height:14px}
+.links a:hover{color:rgba(255,255,255,0.8)}
 
-/* Expanded state */
-.card-expand{
-  max-height:0;overflow:hidden;transition:max-height 0.6s cubic-bezier(0.23,1,0.32,1);
-}
-.card.expanded .card-expand{max-height:500px}
-.card-expand-inner{padding:0 40px 32px;border-top:1px solid rgba(255,255,255,0.06);margin-top:0;padding-top:24px}
-.video-embed{
-  width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;
-  background:#0a1628;
-}
-.video-embed iframe{width:100%;height:100%;border:none}
-
-/* Card color accents */
-.card[data-project="mirage"]{--accent:#00e5ff;--float-dur:6s;--float-delay:0s}
-.card[data-project="gg"]{--accent:#a855f7;--float-dur:7s;--float-delay:0.5s}
-.card[data-project="sophie"]{--accent:#3b82f6;--float-dur:6.5s;--float-delay:1s}
-.card[data-project="mirage"]:hover{box-shadow:0 8px 32px rgba(0,229,255,0.15),0 0 80px rgba(0,229,255,0.08)}
-.card[data-project="gg"]:hover{box-shadow:0 8px 32px rgba(168,85,247,0.15),0 0 80px rgba(168,85,247,0.08)}
-.card[data-project="sophie"]:hover{box-shadow:0 8px 32px rgba(59,130,246,0.15),0 0 80px rgba(59,130,246,0.08)}
-
-/* ══════ FOOTER ══════ */
-.footer{
-  text-align:center;padding:40px 24px 60px;
-  color:rgba(255,255,255,0.25);font-size:0.8rem;letter-spacing:0.1em;
-}
-
-/* ══════ SOUND TOGGLE ══════ */
-.sound-toggle{
-  position:fixed;bottom:24px;right:24px;z-index:100;
-  width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,0.15);
-  background:rgba(0,0,0,0.4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  transition:all 0.3s;color:#fff;
-}
-.sound-toggle:hover{border-color:rgba(0,229,255,0.4);box-shadow:0 0 20px rgba(0,229,255,0.15)}
-.sound-toggle svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
-
-/* ══════ RESPONSIVE ══════ */
-@media(max-width:768px){
-  .card-inner{flex-direction:column}
-  .card-media{flex:none;height:220px}
-  .card-body{padding:24px}
-  .card-expand-inner{padding:0 24px 24px}
-  .hero-title{font-size:clamp(3rem,15vw,5rem)}
-  .card-stat{font-size:1.4rem}
-  .projects{padding:20px 0 80px}
-}
-
-/* ══════ REDUCED MOTION ══════ */
-@media(prefers-reduced-motion:reduce){
-  *{animation-duration:0s!important;transition-duration:0s!important}
+@media(max-width:480px){
+  h1{font-size:clamp(3.5rem,20vw,6rem)}
+  .links{gap:16px}
 }
 </style>
 </head>
 <body>
-
-<!-- Ocean Background -->
-<div class="ocean-bg">
-  <img src="https://images.pexels.com/photos/932638/pexels-photo-932638.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop" 
-       alt="" loading="eager" decoding="async">
+<div class="glow"></div>
+<div class="container">
+  <h1>Keiran</h1>
+  <div class="links">
+    <a href="https://x.com/keirsim">x</a>
+    <a href="https://youtube.com/@keirsim">youtube</a>
+  </div>
 </div>
-<div class="ocean-overlay"></div>
-
-<!-- Light Rays -->
-<div class="light-rays">
-  <div class="ray"></div><div class="ray"></div><div class="ray"></div>
-  <div class="ray"></div><div class="ray"></div>
-</div>
-
-<!-- Particles -->
-<div class="particles" id="particles"></div>
-
-<!-- Main Content -->
-<div class="content">
-  
-  <!-- Hero -->
-  <section class="hero">
-    <h1 class="hero-title">KEIRAN</h1>
-    <p class="hero-sub">builder · shipping at the edge</p>
-    <div class="scroll-hint">
-      <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-    </div>
-  </section>
-
-  <!-- Projects -->
-  <section class="projects">
-    <p class="section-label">Selected Projects</p>
-
-    <!-- Mirage -->
-    <div class="card" data-project="mirage" onclick="toggleCard(this)">
-      <div class="card-inner">
-        <div class="card-media">
-          <img src="https://images.pexels.com/photos/8721318/pexels-photo-8721318.jpeg?auto=compress&cs=tinysrgb&w=800" 
-               alt="Mirage AR" loading="lazy"
-               style="filter:hue-rotate(20deg) brightness(0.9) saturate(1.4)">
-        </div>
-        <div class="card-body">
-          <div class="card-tag"><span class="dot"></span> AR / Crypto</div>
-          <h2 class="card-name">Mirage</h2>
-          <p class="card-tagline">AR meets crypto. Location-based AR experiences with token incentives.</p>
-          <div class="card-stat">$1.3M</div>
-          <div class="card-stat-label">Raised from Delphi Digital</div>
-          <p class="card-desc">Transform media into 3D magic. Real-time AR editing, dynamic experiences, integrated spatial audio. Built for everyone.</p>
-          <div class="card-links">
-            <a href="https://mirage.ar" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-              mirage.ar
-            </a>
-            <a href="https://apps.apple.com/us/app/mirage-studio/id1671886519" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83"/><path d="M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-              App Store
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- GG -->
-    <div class="card" data-project="gg" onclick="toggleCard(this)">
-      <div class="card-inner">
-        <div class="card-media">
-          <img src="https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg?auto=compress&cs=tinysrgb&w=800" 
-               alt="GG Crypto Hunger Games" loading="lazy"
-               style="filter:hue-rotate(-20deg) saturate(1.3)">
-        </div>
-        <div class="card-body">
-          <div class="card-tag"><span class="dot"></span> Gaming / Crypto</div>
-          <h2 class="card-name">GG — Crypto Hunger Games</h2>
-          <p class="card-tagline">PokemonGo meets memecoins. Real-time game streaming platform.</p>
-          <div class="card-stat">110K followers</div>
-          <div class="card-stat-label">In 3 days · $700K raised</div>
-          <p class="card-desc">Live-streamed crypto game show that went viral. Players hunt memecoins in real-time while audiences bet on outcomes.</p>
-          <div class="card-links">
-            <a href="https://x.com/NashGGs" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24"><path d="M4 4l11.733 16h4.267l-11.733-16zM4 20l6.768-6.768M20 4l-6.768 6.768"/></svg>
-              @NashGGs
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="card-expand">
-        <div class="card-expand-inner">
-          <div class="video-embed">
-            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="GG gameplay" loading="lazy" allowfullscreen 
-                    data-src-x="https://x.com/NashGGs/status/1808877799790248246"></iframe>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Sophie -->
-    <div class="card" data-project="sophie" onclick="toggleCard(this)">
-      <div class="card-inner">
-        <div class="card-media">
-          <img src="https://scontent.oculuscdn.com/v/t64.5771-25/q92/s720x720/75484389_8890843394267506_5625282261044127744_n.jpg" 
-               alt="Sophie AI Companion on Meta Quest" loading="lazy"
-               onerror="this.src='https://images.pexels.com/photos/8721342/pexels-photo-8721342.jpeg?auto=compress&cs=tinysrgb&w=600'">
-        </div>
-        <div class="card-body">
-          <div class="card-tag"><span class="dot"></span> AI / VR</div>
-          <h2 class="card-name">Sophie</h2>
-          <p class="card-tagline">First AI companion on Meta Quest. Unreal MetaHuman + ElevenLabs.</p>
-          <div class="card-stat">Meta Quest</div>
-          <div class="card-stat-label">Shipped · Generated Revenue</div>
-          <p class="card-desc">Hyper-realistic AI companion built with Unreal Engine MetaHumans and ElevenLabs voice. Passed Meta's full platform review.</p>
-          <div class="card-links">
-            <a href="https://www.meta.com/experiences/sophie/8890839327601249/" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path d="M9 12l2 2 4-4"/></svg>
-              Meta Quest Store
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </section>
-
-  <footer class="footer">keiran.ai</footer>
-</div>
-
-<!-- Sound Toggle -->
-<button class="sound-toggle" id="soundToggle" onclick="toggleSound()" aria-label="Toggle sound">
-  <svg id="soundOff" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
-  <svg id="soundOn" viewBox="0 0 24 24" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-</button>
-
-<!-- YouTube Audio (hidden) -->
-<div id="ytPlayer" style="position:fixed;bottom:-200px;left:-200px;width:1px;height:1px;overflow:hidden;pointer-events:none">
-  <iframe id="ytFrame" width="1" height="1" src="https://www.youtube.com/embed/HhZaHf8RP6g?enablejsapi=1&loop=1&playlist=HhZaHf8RP6g&autoplay=0&controls=0" 
-          allow="autoplay" frameborder="0"></iframe>
-</div>
-
-<script>
-// ══════ PARTICLES ══════
-(function initParticles(){
-  const c=document.getElementById('particles');
-  const isMobile=window.innerWidth<768;
-  const count=isMobile?15:35;
-  for(let i=0;i<count;i++){
-    const p=document.createElement('div');
-    p.className='particle';
-    const s=Math.random()*3+1;
-    const dur=Math.random()*20+15;
-    const left=Math.random()*100;
-    const delay=Math.random()*dur;
-    const drift=(Math.random()-0.5)*100;
-    p.style.cssText=`
-      width:${s}px;height:${s}px;left:${left}%;
-      animation-duration:${dur}s;animation-delay:-${delay}s;
-      --drift:${drift}px;
-      opacity:${Math.random()*0.6+0.2};
-    `;
-    c.appendChild(p);
-  }
-})();
-
-// ══════ PARALLAX ══════
-document.addEventListener('mousemove',function(e){
-  const x=(e.clientX/window.innerWidth-0.5)*2;
-  const y=(e.clientY/window.innerHeight-0.5)*2;
-  document.querySelectorAll('.card').forEach((card,i)=>{
-    const f=(i+1)*2;
-    card.style.transform=`translateY(${-y*f}px) translateX(${-x*f}px)`;
-  });
-});
-
-// ══════ CARD EXPAND ══════
-function toggleCard(card){
-  const wasExpanded=card.classList.contains('expanded');
-  document.querySelectorAll('.card.expanded').forEach(c=>c.classList.remove('expanded'));
-  if(!wasExpanded) card.classList.add('expanded');
-}
-
-// ══════ SOUND ══════
-let soundPlaying=false;
-let ytReady=false;
-let player;
-
-// YouTube IFrame API
-const tag=document.createElement('script');
-tag.src='https://www.youtube.com/iframe_api';
-document.head.appendChild(tag);
-window.onYouTubeIframeAPIReady=function(){
-  player=new YT.Player('ytFrame',{
-    events:{
-      onReady:function(){ytReady=true},
-      onStateChange:function(e){
-        if(e.data===YT.PlayerState.ENDED){player.playVideo()}
-      }
-    }
-  });
-};
-
-function toggleSound(){
-  if(!ytReady)return;
-  if(soundPlaying){
-    player.pauseVideo();
-    document.getElementById('soundOff').style.display='';
-    document.getElementById('soundOn').style.display='none';
-  } else {
-    player.playVideo();
-    player.setVolume(30);
-    document.getElementById('soundOff').style.display='none';
-    document.getElementById('soundOn').style.display='';
-  }
-  soundPlaying=!soundPlaying;
-}
-
-// ══════ INTERSECTION OBSERVER (fade in cards) ══════
-const obs=new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      e.target.style.opacity='1';
-      e.target.style.transform='translateY(0)';
-    }
-  });
-},{threshold:0.1});
-document.querySelectorAll('.card').forEach(c=>{
-  c.style.opacity='0';
-  c.style.transform='translateY(40px)';
-  c.style.transition='opacity 0.8s cubic-bezier(0.23,1,0.32,1), transform 0.8s cubic-bezier(0.23,1,0.32,1)';
-  obs.observe(c);
-});
-</script>
 </body>
 </html>
